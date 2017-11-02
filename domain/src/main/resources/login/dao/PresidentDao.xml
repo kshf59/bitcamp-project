@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="login.dao.PresidentDao">
+
+	<resultMap type="president" id="presidentMap">
+		<id column="p_no" property="p_no" />
+		<result column="p_email" property="p_email" />
+		<result column="p_name" property="p_name" />
+		<result column="p_id" property="p_id" />
+		<result column="p_phone" property="p_phone" />
+		<result column="p_pwd" property="password" />
+	</resultMap>
+
+
+	<sql id="select1">
+		select p_no, p_id, p_name, p_phone, p_email
+		from president
+	</sql>
+
+	<select id="selectList" resultMap="presidentMap" parameterType="map">
+		<include refid="select1" />
+		<if test="search != null">
+			<where>
+				<choose>
+					<when test="search == 'p_id'">p_id = #{value}</when>
+					<when test="search == 'p_name'">p_name like concat('%', #{value}, '%')</when>
+					<when test="search == 'p_phone'">p_phone like concat('%', #{value}, '%')</when>
+				</choose>
+			</where>
+		</if>
+		order by p_name asc
+		limit #{startIndex}, #{pageSize}
+	</select>
+
+	<select id="selectListByNames" resultMap="presidentMap"
+		parameterType="map">
+		<include refid="select1" />
+		<if test="names != null">
+			<where>
+				p_name in
+				<foreach collection="names" item="p_name" open="(" close=")"
+					separator=",">
+					#{p_name}
+				</foreach>
+			</where>
+		</if>
+		order by p_name asc
+		limit #{startIndex}, #{pageSize}
+	</select>
+
+
+	<select id="selectOne" resultMap="presidentMap" parameterType="int">
+		<include refid="select1" />
+		where p_no = #{presidentNo}
+	</select>
+
+	<select id="selectOneByIdPassword" resultMap="presidentMap"
+		parameterType="map">
+		<include refid="select1" />
+		<!-- where p_id=#{p_id} and p_pwd=p_pwd(#{p_pwd}) -->
+		where p_id=#{p_id} and p_pwd=password(#{password})
+	</select>
+
+	<insert id="insert" parameterType="president" useGeneratedKeys="true"
+		keyColumn="p_no" keyProperty="p_no">
+		insert into president(p_id, p_pwd, p_name, p_phone, p_email)
+		values(#{p_id}, password(#{password}), #{p_name}, #{p_phone}, #{p_email})
+	</insert>
+
+	<!-- <insert id="insert" parameterType="president"> insert into president(p_id,p_pwd,p_name,p_phone,p_email) 
+		values(#{p_id},#{p_pwd}, #{p_name}, #{p_phone}, #{p_email}) </insert> -->
+</mapper>
+ 
