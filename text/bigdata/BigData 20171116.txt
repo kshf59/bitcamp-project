@@ -14,3 +14,13 @@ type2 = 전 가상화
 
 host OS
 quest OS
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+hadoop Node 구성
+
+1. name Node
+2. secondary name Node
+3. data Node
+4. resource manager
+5. node manager
