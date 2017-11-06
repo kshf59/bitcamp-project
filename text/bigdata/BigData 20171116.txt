@@ -19,8 +19,10 @@ quest OS
 
 hadoop Node 구성
 
-1. name Node
-2. secondary name Node
-3. data Node
+1. name Node 1개
+2. secondary name Node 2개
+3. data Node 2개 (취소)
 4. resource manager
 5. node manager
+
+하둡버전(2개) : 1.2.1(stable) , 2.8.0(stable)
