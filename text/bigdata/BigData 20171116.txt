@@ -42,11 +42,11 @@ quest OS
 
 hadoop Node 구성
 
-1. name Node 1개
-2. secondary name Node 2개
-3. data Node 2개 (최소, 최대 4개),
-4. resource manager 1개
-5. node manager : datanode 개수와 동일하게
+1. name Node 1개    >>>> hadoop-master
+2. secondary name Node 2개  >>>> hadoop-secondary
+3. data Node 3개 ,  >>>>>> hadoop-worker1,2,3~
+4. resource manager 1개   >>>> hadoop-rm / hadoop-master(원래는 이렇게 불림)
+5. node manager : datanode 개수와 동일하게 >>>> hadoop-worker2,3,4~~~
 
 하둡버전(2개) : 1.2.1(stable) , 2.8.0(stable)   <3버전까지 나왔으나 3버전은 시기상조 이고 1,2 는 어떤기업이 어느버전을 사용할지모르기에>
 
