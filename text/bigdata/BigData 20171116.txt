@@ -1,0 +1,16 @@
+﻿빅데이터
+
+윈도우즈 10 build 버전이 1450 이상일 경우 리눅스( windows Subsystem for Linux (W.S.L)) 사용이 가능하다.
+    -Hadoop Cluster Client
+
+VMware Workstation Player v14
+    - A few VMs, Hadoop Cluster
+    
+--------------------------------------------------------------------------------------------------------------------------------
+
+가상화 virtual machine(V.M)
+type1 = 반가상화
+type2 = 전 가상화
+
+host OS
+quest OS
