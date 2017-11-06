@@ -5,9 +5,11 @@
 
 1. 제너릭 프로그래밍
 2. 람다 (익명객체/함수로 쉽게 만든식)
+
+데비안? 계열 deb  레드햇 계열 ipm 확장자를 가짐
 --------------------------------------------------------------------------------------------------------------------------------
 
-윈도우즈 10 build 버전이 1450 이상일 경우 리눅스( windows Subsystem for Linux (W.S.L)) 사용이 가능하다.  (cygwin 이 깔려있어야한다)
+1. 윈도우즈 10 build 버전이 1450 이상일 경우 리눅스( windows Subsystem for Linux (W.S.L)) 사용이 가능하다.  (cygwin 이 깔려있어야한다)
     - 구글에 MS WSL 검색
     - https://msdn.microsoft.com/en-us/commandline/wsl/install-win10 사이트
     - 윈도우즈 프로프램 추가 제거 에서  윈도우즈 기능 켜기/끄기
@@ -20,9 +22,13 @@
     - Hadoop Cluster Client
     
 
-VMware Workstation Player v14
+2. VMware Workstation Player v14 설치
     - A few VMs, Hadoop Cluster
-    
+
+3. centOS 7  설치
+    - dvd iso 버전 다운
+    - actual country 에서 아무거나 다운
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 가상화 virtual machine(V.M)
@@ -43,3 +49,20 @@ hadoop Node 구성
 5. node manager : datanode 개수와 동일하게
 
 하둡버전(2개) : 1.2.1(stable) , 2.8.0(stable)   <3버전까지 나왔으나 3버전은 시기상조 이고 1,2 는 어떤기업이 어느버전을 사용할지모르기에>
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+$ sudo su - root
+# apt-get update  >> apt 업데이트
+# apt-get upgrade >> apt 업그레이드 개발 라이브러리 등등
+# apt-get install alien >> alien을 깔아야 rpm 패키지를 설치할수 있다. (centOS에서는 필요가 없다)
+# apt-get install sysvbanner >> 글씨를 크게 보여주는 패키지
+# apt-get install yum yum-utils 
+
+# apt-get install default-jdk default-jdk-doc
+# apt-get install python-pip
+
+(pip는 파이썬 패키지 관리자)
+
+# pip install --upgrade pip
