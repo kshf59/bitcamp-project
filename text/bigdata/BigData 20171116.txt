@@ -1,16 +1,23 @@
 ﻿빅데이터
 
+** 신용권
+    "이것이 ... 이다." ex) 자바 등등 추천해주심
+
+1. 제너릭 프로그래밍
+2. 람다 (익명객체/함수로 쉽게 만든식)
+--------------------------------------------------------------------------------------------------------------------------------
+
 윈도우즈 10 build 버전이 1450 이상일 경우 리눅스( windows Subsystem for Linux (W.S.L)) 사용이 가능하다.  (cygwin 이 깔려있어야한다)
-    -구글에 MS WSL 검색
-    -https://msdn.microsoft.com/en-us/commandline/wsl/install-win10 사이트
+    - 구글에 MS WSL 검색
+    - https://msdn.microsoft.com/en-us/commandline/wsl/install-win10 사이트
     - 윈도우즈 프로프램 추가 제거 에서  윈도우즈 기능 켜기/끄기
     - 리눅스용 윈도우즈 하위 시스템, 텔넷 클라이언트 체크 하고 확인 다시시작
     - 명령프롬프트에 bash 입력 (bash shell 사용)
     - https://aka.ms/wslusers 에서 간단한 명령어 확인 가능
     - MS store 에서 ubuntu 검색 (ubuntu는 학계에서 쓰는 OS sentOS는 기업에서 사용하는 OS)
-    - ubuntu는 인공지능이 뜨면서 파이썬이 가장잘 돌아가는 환경
+    - ubuntu는 인공지능이 뜨면서 파이썬이 가장 잘 돌아가는 환경
     
-    -Hadoop Cluster Client
+    - Hadoop Cluster Client
     
 
 VMware Workstation Player v14
