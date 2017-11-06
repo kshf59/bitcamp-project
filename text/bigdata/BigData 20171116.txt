@@ -52,14 +52,18 @@ hadoop Node 구성
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-** UBUNTU 설정하기 **
+
+** UBUNTU 설정하기 ** 
+
+- man apt-get (옵션 명령어 찾기)
 
 $ sudo su - root
 # apt-get update  >> apt 업데이트
 # apt-get upgrade >> apt 업그레이드 개발 라이브러리 등등
 # apt-get install alien >> alien을 깔아야 rpm 패키지를 설치할수 있다. (centOS에서는 필요가 없다)
 # apt-get install sysvbanner >> 글씨를 크게 보여주는 패키지
-# apt-get install yum yum-utils 
+    명령어 ex) banner 입력할 텍스트 
+# apt-get install yum yum-utils >> yum 패키지를 설치하는거
 
 # apt-get install default-jdk default-jdk-doc
 # apt-get install python-pip
