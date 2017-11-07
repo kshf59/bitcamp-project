@@ -130,11 +130,12 @@ $ ssh-keygen -t rsa
 --root로 가서--
 # ssh-keygen -t rsa
 # cd
-# vi /etc/host   에서 아이피 이름 이름.local  추가
+# vi /etc/hosts   에서 아이피 이름 이름.local
+                      큰형님아이피  hadoop-master hadoop-master.local 추가
 # ssh-copy-id -i id_rsa.pub hadoop-worker1
     --> 암호 치라나오면 root 암호 치면 된다.
+# cd .ssh
 # cat authorized_keys
 # cat id_rsa.pub
 # cat known_hosts
-# vi /etc/hosts   큰형님아이피  hadoop-master hadoop-master.local
 # ssh-copy-id -i id_rsa.pub hadoop-master 보내면 된다. 큰형님꺼다
