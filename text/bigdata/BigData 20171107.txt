@@ -16,6 +16,7 @@ $ sudo yum -y update
 Ubuntu 환경설정 
 
 ## ping으로 아이피연결 가능한지 확인 ##
+## 명령어: history (내가 현재 터미널에서 세션을 끊기전까지 수행한 명령어를 보여주는것) ##
 
 $ sudo vi /etc/hosts
     --> VMware 에 아이피 등록 호스트 이름 도메인 이름 등록    ex) hadoop-worker1  hadoop-worker1.local
@@ -33,3 +34,27 @@ $ yum search epel
 $ sudo yum -y install epel-release
 $ cd /etc
 $ ll sudoers
+$ sudo vi sudoers
+    --> 102번째줄 yy p 복사해서  wheel(계정)을 본인의 계정으로 바꾼다
+    --> root계정임에도 불구하고 저장이 안된다 :x! 하고 강제저장 시켜라
+$ yum makecache fast
+    --> 로컬 패키지의 목록정보를 올리는것
+$ yum repolist
+$ sudo yum -y install banner
+    --> banner 텍스트명
+    --> man banner << 뭐 확인하는거였는데 ???
+$ yum search htop nmon mc nc iptraf iptraf-ng bmon slurm tcptrack
+$ sudo yum -y install search htop nmon mc nc iptraf iptraf-ng bmon slurm tcptrack
+    --> htop 입력
+$ sudo yum -y install ncdu --> disk usage viewer
+    --> ncdu 사용량을 확인할수 있다  콘솔에 ncdu 입력하면 된다.
+$ sudo yum -y install tree.x86_64 telnet.x86_64
+    --> tree .  << 트리명령어로 현재 디렉토리와 다른디렉토리 구조를 검색할수있다.
+$ 
+$ cd /etc/profile.d
+$ sudo touch xps1.sh
+$ echo PS1
+$ sudo vi xps1.sh
+    --> export PS1="[\u@\h \w](\\#)$" 추가
+    --> 무슨 소문자로 되고 어쩌고 말하셨는데 못들었다.
+$ source /etc/profile
