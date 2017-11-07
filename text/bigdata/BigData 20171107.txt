@@ -81,14 +81,60 @@ $ source /etc/profile
 
 --------------------------------------------------------------------------------------------------------------------------------
 
-
 ## 사실은 마스터만 하는데 공부삼아 하는거다 ##
+
 $ sudo vi /etc/hosts
     --> 192.168.00.00  hadoop-master hadoop-master.local    << 마스터인 경우에만 등록한다.
 $ sudo mkdir /etc/rsync.d
 $ sudo yum install lsyncd lua rsync  >> lsyncd, lua, rsync 를 깐다
 $ sudo vi /usr/lib/systemd/system/lsyncd.service
     ---> ExecStart=/usr/bin/lsyncd -insist -log all -nodaemon $LSYNCD_OPTIONS을 기존에꺼에 추가한다.
-$ sudo systemctl daemon-reload
-$ sudo systemctl restart lsyncd
-$ sudo systemctl status lsyncd
+
+$ cd /etc/
+$ ll lsync*
+$ sudo vi lsyncd.conf
+-------------------------------------------------
+    settings {
+        logfile="/tmp/lsyncd.log",
+        statusFile="/tmp/lsyncd-status.log"
+    } -- end settings
+    
+    -- 기존의 sync 삭제
+    
+    sync {
+        default.rsyncssh,
+        host="hadoop-worker1",  -- 마스터가 가져갈 슬레이브 노드들 입력 마스터가 아니면 각자개인하셈
+        source="/etc/rsync.d/",
+        targetdir="/etc/rsync.d/",
+        delay=1.
+        delete=true,  -- 마스터에 어떤파일을 삭제하면 삭제까지도 하거라
+        ssh={ port = 22 },
+        rsync={
+            archive = true,  --파일의 메타정보를 복제 복사를 시간까지도 맞춰주어라 
+            compress = false, -- 보내는 양이 많으면 압축을 해서 사이즈를 줄여라
+            verbose = false  --상세하게 로그를 남길것이냐
+        }
+    } -- end sysnc
+------------------------------------------------
+
+$ sudo vi /etc/ssh/ssh_config
+    --> 35번줄 StrictHostKeyCheking ask 복사해서  하나 주석 붙이고 다른하나 옆에 ask 지우고 no 붙여라
+    --> 60번째줄 GSSAPIAuthentication yes  복사해서  하나 주석 붙이고 다른하나 옆에 no 붙여라
+    --> 포트번호 22 가 추가되있는데 하나 더추가해라
+    --> Protocol 2 도 하나 더 추가해라
+    --> 58 59  host 어쩌고 checkhost 어쩌고 주석 풀어라
+
+$ ssh-keygen -t rsa
+    --> 암호 물어보면 암호걸지마라 통신할때마다 물어보니까
+    --> home으로 가서 cd .ssh 하고 ll 해서 파일 2개인지 보셈
+--root로 가서--
+# ssh-keygen -t rsa
+# cd
+# vi /etc/host   에서 아이피 이름 이름.local  추가
+# ssh-copy-id -i id_rsa.pub hadoop-worker1
+    --> 암호 치라나오면 root 암호 치면 된다.
+# cat authorized_keys
+# cat id_rsa.pub
+# cat known_hosts
+# vi /etc/hosts   큰형님아이피  hadoop-master hadoop-master.local
+# ssh-copy-id -i id_rsa.pub hadoop-master 보내면 된다. 큰형님꺼다
