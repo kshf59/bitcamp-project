@@ -2,6 +2,8 @@
 
 ssh(secure shell)   ssl 기반으로 한 암호화 기법?
 
+DNS서버 -- 아이피 주소를 도메인 이름으로 바꿔준것
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 VMware CentOS7 환경설정하기
@@ -50,11 +52,27 @@ $ sudo yum -y install ncdu --> disk usage viewer
     --> ncdu 사용량을 확인할수 있다  콘솔에 ncdu 입력하면 된다.
 $ sudo yum -y install tree.x86_64 telnet.x86_64
     --> tree .  << 트리명령어로 현재 디렉토리와 다른디렉토리 구조를 검색할수있다.
-$ 
 $ cd /etc/profile.d
 $ sudo touch xps1.sh
 $ echo PS1
 $ sudo vi xps1.sh
     --> export PS1="[\u@\h \w](\\#)$" 추가
+    -->  \u ????  \h 현재 이친구의 호스트네임  \w 경로를 보여줄때 앞에 다짤라먹고 뒤만 보여주는거?
     --> 무슨 소문자로 되고 어쩌고 말하셨는데 못들었다.
 $ source /etc/profile
+$ sudo touch banner.sh
+$ sudo vi banner.sh
+    -->  banner `hostname`
+    --> 그러면 접속할때 마다  배너로 hadoop-worker1 이 크게 나온다
+
+-- 환경변수 보는법 --
+env | grep PATH
+echo $PATH
+
+$ sudo touch zpath.sh
+$ sudo vi zpath.sh
+    --> export PATH=.:$PATH
+$ source /etc/profile
+
+
+--------------------------------------------------------------------------------------------------------------------------------
