@@ -68,11 +68,18 @@ $ sudo vi banner.sh
 -- 환경변수 보는법 --
 env | grep PATH
 echo $PATH
+--------------------
 
 $ sudo touch zpath.sh
 $ sudo vi zpath.sh
     --> export PATH=.:$PATH
 $ source /etc/profile
-
+$ sudo vi /etc/resolv.conf
+    --> search localdomain local 에서 localdomain 지우고
+    --> nameserver 192.168.58.2(로컬ip?) 를 맨 밑으로 내린다.
+$ source /etc/profile
 
 --------------------------------------------------------------------------------------------------------------------------------
+
+$ sudo vi /etc/hosts
+    --> 192.168.00.00  hadoop-master hadoop-master.local    << 마스터인 경우에만 등록한다.
