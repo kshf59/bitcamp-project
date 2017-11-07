@@ -81,5 +81,14 @@ $ source /etc/profile
 
 --------------------------------------------------------------------------------------------------------------------------------
 
+
+## 사실은 마스터만 하는데 공부삼아 하는거다 ##
 $ sudo vi /etc/hosts
     --> 192.168.00.00  hadoop-master hadoop-master.local    << 마스터인 경우에만 등록한다.
+$ sudo mkdir /etc/rsync.d
+$ sudo yum install lsyncd lua rsync  >> lsyncd, lua, rsync 를 깐다
+$ sudo vi /usr/lib/systemd/system/lsyncd.service
+    ---> ExecStart=/usr/bin/lsyncd -insist -log all -nodaemon $LSYNCD_OPTIONS을 기존에꺼에 추가한다.
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart lsyncd
+$ sudo systemctl status lsyncd
