@@ -1,10 +1,35 @@
 ﻿빅데이터
 
+ssh(secure shell)   ssl 기반으로 한 암호화 기법?
+
+--------------------------------------------------------------------------------------------------------------------------------
+
 VMware CentOS7 환경설정하기
 
 $ sudo yum -y update
-$ 
+
 
 
 
 --------------------------------------------------------------------------------------------------------------------------------
+
+Ubuntu 환경설정 
+
+## ping으로 아이피연결 가능한지 확인 ##
+
+$ sudo vi /etc/hosts
+    --> VMware 에 아이피 등록 호스트 이름 도메인 이름 등록    ex) hadoop-worker1  hadoop-worker1.local
+$ telnet hadoop-worker1 
+    --> 안들어가짐
+$ grep 22 /etc/services
+    --> ssh 방식을 사용하는것을 확인한다.
+$ ssh hadoop-worker1
+    --> ssh 아이디@hadoop-worker1  계정을 지정해주는 것이 원칙  그렇지 않으면 ubuntu 계정을 이어받아 접속된다.
+
+$ repolist all 
+    --> 현재 사용가능한 저장소만 나온다.
+$ yum makecache fast
+$ yum search epel
+$ sudo yum -y install epel-release
+$ cd /etc
+$ ll sudoers
