@@ -1,0 +1,71 @@
+﻿빅데이터
+
+cp /dev/null /etc/lsyncd.conf
+	--> 어떤용량의 파일도 0으로 만들어버리는 공간
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ubuntu 환경설정 
+
+$ cd
+$ sudo touch .vimrc
+$ sudo echo 'set nu' >> .vimrc
+$ sudo echo 'set tabstop=4' >> .vimrc
+
+$ mkdir A_dir B_dir
+
+$ sudo mv /etc/lsyncd.conf /etc/lsyncd.conf.org
+$ sudo vi /etc/lsyncd.conf
+
+----- 추가 -----
+settings {
+	logfile="/tmp/lsyncd.log",
+	statusFile="/tmp/lsyncd-status.log"
+}
+
+sync {
+	default.rsync,
+	source="/home/kshf59/A_dir",
+	target="/hom2/kshf59/B_dir"
+}
+----- 추가 -----
+
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart lsyncd
+$ sudo systemctl status lsyncd
+$ sudo systemctl start lsyncd
+
+------------- 만약 위 systemctl 과정이 실행 안되거나 없다고하면-----------
+
+# yum install lsyncd lua rsync
+# vi /usr/lib/systemd/system/lsyncd.service (아래와 같이 수정)
+
+ExecStart=/usr/bin/lsyncd -insist -log all -nodaemon $LSYNCD_OPTIONS
+
+-----------------------------------------------------------------------
+
+다른 커맨더창에서 --------------------------------
+$ cd                                           ㅣ
+$ cd B_dir                                     ㅣ
+$ watch -n.5 'ls -l'                           ㅣ
+    ---> 0.5초 마다 ls -l 명령어를 수행해라.     ㅣ
+------------------------------------------------
+
+$ cd
+$ cd A_dir
+$ pwd
+$ touch f1
+    ---> 일정시간뒤 B_dir 뒤에 f1 메세지 날라옴
+$ sudo vi /etc/lsyncd.conf
+    ---> sysnc 에 default.rsync 밑에 delay=1, 추가
+$ sudo systemctl restart lsyncd
+$ sudo systemctl status lsyncd
+$ sudo systemctl start lsyncd
+$ sudo toch f2
+    ---> 전송시간이 빨라졌다.
+$ touch f3
+$ touch f4
+$ echo hello > f4
+$ echo hello >> f4
+$ cat f4
+$ rm f4
