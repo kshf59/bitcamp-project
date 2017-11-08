@@ -2,7 +2,7 @@
 
 cp /dev/null /etc/lsyncd.conf
 	--> 어떤용량의 파일도 0으로 만들어버리는 공간
-
+ var/www/html_backup
 --------------------------------------------------------------------------------------------------------------------------------
 
 Ubuntu 환경설정 
@@ -61,7 +61,7 @@ $ sudo vi /etc/lsyncd.conf
 $ sudo systemctl restart lsyncd
 $ sudo systemctl status lsyncd
 $ sudo systemctl start lsyncd
-$ sudo toch f2
+$ sudo touch f2
     ---> 전송시간이 빨라졌다.
 $ touch f3
 $ touch f4
