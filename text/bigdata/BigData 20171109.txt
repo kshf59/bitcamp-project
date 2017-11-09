@@ -1,0 +1,83 @@
+﻿빅데이터
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+$ sudo groupadd hadoop
+$ grep hadoop /etc/group
+$ grep wheel /etc/group   //wheel은 관리자권한이 있는 아이디
+$ grep users /etc/group   //users root사용자 이외의 모든계정
+$ sudo useradd -g hadoop -G wheel,users hadoop
+$ sudo passwd hadoop
+$ sudo vi /etc/sudoers registration
+    ...
+    103 trinity     ALL=(ALL)   NOPASSWD: ALL
+    104 hadoop      ALL=(ALL)   NOPASSWD: ALL
+    ...
+# chmod 777 /opt
+---- 리눅스 권한 ----
+x =
+y =
+z =
+l =
+w =
+---- 리눅스 권한 ----
+kshf59@Bit:~$ df -k
+kshf59@Bit:~$ cd /mnt/c
+kshf59@Bit:~$ cd /mnt/c/Users/Bitcamp/Downloads
+Downloads $ scp hadoop-1.2.1-bin.tar.gz kshf59@hadoop-worker1:/opt/.
+Downloads $ scp hadoop-2.8.2.tar.gz kshf59@hadoop-worker1:/opt/.
+
+
+# su hadoop
+(하둡계정으로 수행)
+$ cd /opt
+$ tar xvfz hadoop-1.2.1-bin.tar.gz
+$ tar xvfz hadoop-2.8.2.tar.gz
+$ ln -s /opt/hadoop-1.2.1 hadoop                
+	-- >ln 링크  -s 소프트링크 
+	    하드링크(원본에 대해 또다른이름이 생기고 수정을 하면 같이 수정된다)
+		소프트링크(원본에 대해 또다른이름이 생기는데 수정을 한다고 해서 원본이 훼손되지않는다)
+$ rm hadoop-1.2.1-bin.tar.gz
+$ rm hadoop-2.8.2-tar.gz
+
+$ ll
+-------------------------------------------------------------------------------                                        |
+total 4																		  |
+lrwxrwxrwx.  1 hadoop hadoop      17 Nov  9 11:57 hadoop -> /opt/hadoop-1.2.1 |
+drwxr-xr-x. 14 hadoop hadoop    4096 Jul 23  2013 hadoop-1.2.1                |
+drwxr-xr-x.  9 	  hadoop hadoop  149 Oct 20 06:11 hadoop-2.8.2                |
+-------------------------------------------------------------------------------
+
+$ export HADOOP_HOME=/opt/hadoop
+$ echo $HADOOP_HOME
+$ cd /opt/hadoop
+$ mkdir pids
+
+---------------------------------------------------------
+* HADODP 폴더 구조 *
+---------------------------------------------------------
+  bin - HADOOP 을 실행하거나, 관리하는 스크립트 폴더
+  c++ - c++ 클라이언트 라이브러리
+  conf - HADOOP 환경설정파일
+  contrib - HADOOP main code에 반영되지는 않았으나, 다양한 기능을 수행하는 도구
+  docs - HADOOP 관련문서 + 자바 API 문서
+  ivy - HADOOP 빌드시, 필요한 외부 라이브러리 의존송을 해결하기 위한 설정파일
+  lib - HADOOP 에서, 사용되는 외부라이브러리 폴더
+  logs - HADOOP log file
+  sbin - HADOOP 설정을 질의 형식으로, 관리용 스크립트 폴더 
+  share - 공유되어야할 설정파일의 템플릿 폴더. 
+          HADOOP 설정파일은 모든 노드가 공유되어야함
+  src - HADOOP source. core/hdfs/mapred 등 메인 프로그램 소스코드, C++소스코드,
+        예제소스코드, API 문서
+  webapps - 웹서버 ROOT 폴더. 웹서버로 jetty 이용.
+---------------------------------------------------------
+
+$ cd /etc/profile.d
+$ sudo touch hadoop.sh
+$ sudo vi /etc/profile.d/hadoop.sh
+	--> export HADOOP_HOME=/opt/hadoop
+	    export HADOOP_PID_DIR=${HADOOP_HOME}/pids
+$ env | grep hadoop
+
+$ sudo vi /opt/hadoop/conf/hadoop-env.sh setting
+	--> set JAVA_HOME / HADOOP_OPTS = -server / HADOOP_LOG_DIR uncomment HADOOP_SLAVES /HADOOP_PID_DIR = ${HADOOP_HOME}/pids
