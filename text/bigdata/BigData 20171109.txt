@@ -41,7 +41,7 @@ $ rm hadoop-1.2.1-bin.tar.gz
 $ rm hadoop-2.8.2-tar.gz
 
 $ ll
--------------------------------------------------------------------------------                                        |
+-------------------------------------------------------------------------------                                        
 total 4																		  |
 lrwxrwxrwx.  1 hadoop hadoop      17 Nov  9 11:57 hadoop -> /opt/hadoop-1.2.1 |
 drwxr-xr-x. 14 hadoop hadoop    4096 Jul 23  2013 hadoop-1.2.1                |
@@ -77,7 +77,198 @@ $ sudo touch hadoop.sh
 $ sudo vi /etc/profile.d/hadoop.sh
 	--> export HADOOP_HOME=/opt/hadoop
 	    export HADOOP_PID_DIR=${HADOOP_HOME}/pids
+$ source /etc/profile
 $ env | grep hadoop
 
+
+$ su
+# yum makecache fast
+# yum search jdk
+	--> 이렇게 하면 openJDK가 나온다 추천하지 않는다 oracle 사이트에서 받아라
+kshf59@Bit:~$ df -k
+kshf59@Bit:~$ cd /mnt/c
+kshf59@Bit:~$ cd /mnt/c/Users/Bitcamp/Downloads
+Downloads $ scp jdk-8u152-linux-x64.tar.gz kshf59@hadoop-worker1:/opt/.
+$ ssh hadoop-worker1
+# cd
+# cd /opt
+# tar xvfz jdk-8u152-linux-x64.tar.gz
+# chown -R root:root jdk1.8.0_152
+# rm -f jdk-8u152-linux-x64.tar.gz
+# ln -s /opt/jdk1.8.0_152/ java
+# ls -al
+	--> 권한을 root로 바꿔준다 원래 권한이였던 숫자는 오라클에서 tar파일을 만들당시의 권한이였다.
+
+[root@hadoop-worker1 /opt/java/bin](26)$ echo $PATH
+.:.:.:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/kshf59/.local/bin:/home/kshf59/bin
+	--> 맨앞에 .이 있어야 한다.
+
+# cd /etc/profile.d
+# touch java.sh
+# vi /etc/profile.d/java.sh
+	--> export JAVA_HOME=/opt/java 
+	--> export JRE_HOME=${JAVA_HOME}/jre  추가
+# source /etc/profile
+# vi zpath.sh
+	--> export PATH=${JAVA_HOME}/bin:${PATH}
+# source /etc/profile
+# echo $PATH
+	--> .:/opt/java/bin:.:.:.:.:.:.:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/kshf59/.local/bin:/home/kshf59/bin
+		(현재 디렉토리부터 패스를 찾고 없으면 뒤에 순서대로 찾아라)
+# javac -version
 $ sudo vi /opt/hadoop/conf/hadoop-env.sh
-	--> set JAVA_HOME / HADOOP_OPTS = -server / HADOOP_LOG_DIR uncomment HADOOP_SLAVES /HADOOP_PID_DIR = ${HADOOP_HOME}/pids
+		--> 9번줄 export JAVA_HOME=${JAVA_HOME}
+		--> 18번줄 주석 풀기
+		--> 34번줄 주석 풀기
+		--> 51번줄 export HADOOP_PID_DIR=${HADOOP_HOME}/pids
+$ sudo vi /opt/hadoop/conf/hadoop.sh
+	-->	export HADOOP_HOME=/opt/hadoop
+		export HADOOP_CONF_DIR=${HADOOP_HOME}/conf
+		export HADOOP_PID_DIR=${HADOOP_HOME}/pids
+$ source /etc/profile
+
+$ cd /opt/hadoop/conf
+
+
+$ vi core-site.xml
+	- 로그파일
+	- 네트워크 설정
+	- 입출력 설정
+	- 파일시스템 설정
+	- 압축 등에 관한 기본 설정
+	- 파일시스템(HDFS)과 맵리듀스에서 공통으로 사용하는 설정파일
+
+-----------------------------------------------------------------------------------------------------
+  6 <configuration>
+  7
+  8     <property>
+  9         <name>fs.default.name</name>
+ 10         <value>hdfs://hadoop-master:9000</value>
+ 11     </property>
+ 12	<!--
+ 13     <property>
+ 14         <name>hadoop.tmp.dir</name>
+ 15         <value>/tmp</value>
+ 16     </property>
+ 17 -->
+ 18 </configuration>
+----------------------------------------------------------------------------------------------------
+
+$ vi hdfs-site.xml
+	- HADOOP에서 데이터를 관리하기 위한 설정파일
+	- 여기서 데이터는
+		(1) Namenode 에서 관리하는 namespace(메타데이터) 데이터
+		(2) DataNode 에서 관리하는 파일블록 데이터
+		(3) ','(콤마)를 이용하여, 여러 폴더를 지정가능(분산설정으로 성능, 용량 향상)
+		(4) 기본 복제본수 지정(replica)
+		(5) 설정에 대한 참고파일 :
+								1) $HADOOP_HOME/src/hdfs/hdfs-default.xml, 
+           						2) $HADOOP_HOME/share/hadoop/templates/conf/hdfs-site.xml
+
+-----------------------------------------------------------------------------------------------------
+  
+  6 <configuration>
+  7
+  8     <property>
+            <!-- Namenode 에서, 파일 namespace 정보를 저장하기 위한 폴더 지정 -->
+  9         <name>dfs.name.dir</name>
+            <!-- ** 주의사항: ','로 디렉토리 구분, 그러나 이 콤마전후로 공백이 있으면 안됨 -->
+ 10         <value>/var/lib/hadoop/dfs/name/1,/var/lib/hadoop/dfs/name/2</value>
+ 11     </property>
+ 12
+ 13
+ 14     <property>
+            <!-- Namenode 에서, 파일블록을 저장할 폴더 지정 -->
+ 15         <name>dfs.data.dir</name>
+            <!-- ** 주의사항: ','로 디렉토리 구분, 그러나 이 콤마전후로 공백이 있으면 안됨 -->
+ 16         <value>/var/lib/hadoop/dfs/data/1,/var/lib/hadoop/dfs/data/2</value>
+ 17     </property>
+ 18
+ 19
+ 20     <property>
+            <!-- 파일의 기본복제수를 지정 -->
+ 21         <name>dfs.replication</name>
+ 22         <value>2</value>
+ 23     </property>
+ 24
+ 25
+ 26     <property>
+            <!-- HADOOP v1.0.0 부터 추가된 기능, HTTP 로 HDFS에 접근기능 -->
+            <!-- true 인 경우, HADOOP client를 사용하지 않고도, HDFS에 파일 upload/download 가능 -->
+            <!-- true 로 설정해야, 분산 스토리지 구성 가능 -->
+ 27         <name>dfs.webhdfs.enabled</name>
+ 28         <value>true</value>
+ 29     </property>
+ 30
+ 31 </configuration>
+
+---------------------------------------------------------------------------------------------------------
+
+$ vi mapred-site.xml
+참고주소: https://hadoop.apache.org/docs/r1.2.1/mapred-default.html
+----------------------------------------------------------------------------------------------------------
+
+  6 <configuration>
+  7
+  8     <property>
+  9         <name>mapred.system.dir</name>
+ 10         <value>/var/lib/hadoop/mapred/system</value>
+ 11     </property>
+ 12
+ 13     <property>
+ 14         <name>mapred.local.dir</name>
+ 15         <value>/var/lib/hadoop/mapred/local</value>
+ 16     </property>
+ 17
+ 18     <property>
+ 19           <name>mapred.job.tracker</name>
+ 20           <value>hadoop-master:9001</value>
+ 21     </property>
+ 22
+ 23 </configuration>
+
+----------------------------------------------------------------------------------------------------------
+
+
+$ mkdir -p /var/lib/hadoop/dfs/name/1
+$ mkdir -p /var/lib/hadoop/dfs/name/2
+$ mkdir -p /var/lib/hadoop/data/1
+$ mkdir -p /var/lib/hadoop/data/2
+$ mkdir -p /var/lib/hadoop/mapred/system
+$ mkdir -p /var/lib/hadoop/mapred/local
+$ sudo chown -R hadoop:hadoop /var/lib/hadoop
+
+
+---------------------------------------------------------
+ 5. $HADOOP_HOME/conf/masters
+---------------------------------------------------------
+    - Secondary Namenode 가 실행될 서버 지정
+    - NW IP주소, Domain name, Hostname 사용 가능
+    - 1개 이상의 호스트(Hadoop Node로써) 지정가능 ( Namenode 도 포함 가능)
+
+    hadoop-secmaster.local
+
+    - ** 주의사항 ) 윈도우에서 이 파일을 편집하는 경우, CR/LF 문제발생가능 (Unix형식의 줄바꿈으로 파일변환필요)
+ 
+      # dos2unix masters
+
+
+---------------------------------------------------------
+ 6. $HADOOP_HOME/conf/slaves
+---------------------------------------------------------
+    - DataNode 역할 노드들 지정
+    - 1개 이상의 호스트(Hadoop Node로써). 
+
+  1 hadoop-worker01.local
+  2 hadoop-worker02.local
+
+    - ** 주의사항 ) 윈도우에서 이 파일을 편집하는 경우, CR/LF 문제발생가능 (Unix형식의 줄바꿈으로 파일변환필요)
+ 
+      # dos2unix masters
+
+
+ 6. 주의사항) 이미 Hadoop이 실행중인 상태에서, 위 $HADDOP_HOME/conf/slaves 파일에 명시되지않은
+    서버에서 추가적인 DataNode를 별도로 실행하여, HADOOP datanode cluster에 자동으로 인식가능
+
+$ sudo find /var/lib/hadoop -ls
+	--> 하둡안의 하위폴더의 소유자:소유그룹 다 나온다.
