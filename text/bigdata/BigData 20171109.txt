@@ -79,5 +79,5 @@ $ sudo vi /etc/profile.d/hadoop.sh
 	    export HADOOP_PID_DIR=${HADOOP_HOME}/pids
 $ env | grep hadoop
 
-$ sudo vi /opt/hadoop/conf/hadoop-env.sh setting
+$ sudo vi /opt/hadoop/conf/hadoop-env.sh
 	--> set JAVA_HOME / HADOOP_OPTS = -server / HADOOP_LOG_DIR uncomment HADOOP_SLAVES /HADOOP_PID_DIR = ${HADOOP_HOME}/pids
