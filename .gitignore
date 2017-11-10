@@ -4,6 +4,7 @@
 **/build
 **/.gradle/
 **/.classpath
+**/.settings/
 **/temp/
 **/.class
 **/.log
