@@ -270,5 +270,7 @@ $ sudo chown -R hadoop:hadoop /var/lib/hadoop
  6. 주의사항) 이미 Hadoop이 실행중인 상태에서, 위 $HADDOP_HOME/conf/slaves 파일에 명시되지않은
     서버에서 추가적인 DataNode를 별도로 실행하여, HADOOP datanode cluster에 자동으로 인식가능
 
+--------------------------------------------------------------------------------------------------------------
+
 $ sudo find /var/lib/hadoop -ls
 	--> 하둡안의 하위폴더의 소유자:소유그룹 다 나온다.
