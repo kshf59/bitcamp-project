@@ -8,9 +8,20 @@ H.D secmaster = secondary namenode
 H.D worker = datanode
              tasktracker
 
---------------------------------------------------------------------------------------------------------------------------------
 
-kshf59@Bit:~$
+
+  set nu
+  set smarttab
+  set tabstop=4
+  set title
+  set autoindent
+  set smartindent
+  set paste
+  highlight Comment term=bold cterm=bold ctermfg=4
+
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+kshf59@Bit:~$ 에서 한다
 
 $ sudo vi /etc/sudoers
   --> # Allow members of group sudo to execute any command
@@ -43,4 +54,43 @@ $ sudo su root
  17 -->
  18 </configuration>
 ----------------------------------------------------------------------------------------------------
+# cd /etc/profile.d
+# vi java.sh
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+  export JRE_HOME=${JAVA_HOME}/jre 
+# vi zpath.sh
+  export PATH=${JAVA_HOME}/bin:${PATH}
+  export PATH=.:$PATH 
+# cd /opt/hadoop/conf
+# vi hadoop-env.sh
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64  (주석 풀고 이거 추가)
+# source /etc/profile
 
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+/opt/hadoop/bin 
+  --> hadoop namenode -format
+  --> start-dfs.sh
+  --> stop-dfs.sh
+
+------------------------------------------------------------------
+10. firewall release
+
+   firewall-cmd --permanent --zone=public --add-port=9000/tcp
+   firewall-cmd --permanent --zone=public --add-port=39079/tcp
+   firewall-cmd --permanent --zone=public --add-port=50070/tcp
+   firewall-cmd --permanent --zone=public --add-port=50090/tcp
+   firewall-cmd --permanent --zone=public --add-port=50075/tcp
+   firewall-cmd --permanent --zone=public --add-port=50020/tcp
+   firewall-cmd --permanent --zone=public --add-port=50010/tcp
+   firewall-cmd --permanent --zone=public --add-port=9001/tcp
+   firewall-cmd --permanent --zone=public --add-port=50030/tcp
+   firewall-cmd --permanent --zone=public --add-port=50060/tcp
+   firewall-cmd --reload
+   ------------------------------------------------------------------
+
+   $ ps -ef | grep java  <<< hadoop 로그 확인하는거
+
+   $ hadoop fs -ls -R/
