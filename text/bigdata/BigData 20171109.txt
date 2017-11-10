@@ -125,6 +125,7 @@ $ sudo vi /opt/hadoop/conf/hadoop.sh
 	-->	export HADOOP_HOME=/opt/hadoop
 		export HADOOP_CONF_DIR=${HADOOP_HOME}/conf
 		export HADOOP_PID_DIR=${HADOOP_HOME}/pids
+    export PATH=${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${PATH}
 $ source /etc/profile
 
 $ cd /opt/hadoop/conf

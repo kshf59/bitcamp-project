@@ -1,5 +1,46 @@
 ﻿빅데이터
 
+H.D Master = namenode
+             jobtracker
+
+H.D secmaster = secondary namenode
+
+H.D worker = datanode
+             tasktracker
+
 --------------------------------------------------------------------------------------------------------------------------------
 
-$ 
+kshf59@Bit:~$
+
+$ sudo vi /etc/sudoers
+  --> # Allow members of group sudo to execute any command
+        kshf59  ALL=(ALL:ALL) ALL  추가
+$ sudo su root
+# apt-get update
+# apt search openjdk
+  --> openjdk-8-jdk/xenial-updates,xenial-security 8u151-b12-0ubuntu0.16.04.2 amd64 [upgradable from: 8u131-b11-2ubuntu1.16.04.3]
+      OpenJDK Development Kit (JDK)
+# apt install open-8-jdk
+# wget https://archive.apache.org/dist/hadoop/common/stable1/hadoop-1.2.1-bin.tar.gz
+# mv hadoop-1.2.1-bin.tar.gz /opt
+# cd /opt
+# tar xvfz hadoop-1.2.1-bin.tar.gz
+# mv hadoop-1.2.1 hadoop
+# cd /opt/hadoop
+# vi core-site.xml 
+-----------------------------------------------------------------------------------------------------
+  6 <configuration>
+  7
+  8     <property>
+  9         <name>fs.default.name</name>
+ 10         <value>hdfs://hadoop-master:9000</value>
+ 11     </property>
+ 12	<!--
+ 13     <property>
+ 14         <name>hadoop.tmp.dir</name>
+ 15         <value>/tmp</value>
+ 16     </property>
+ 17 -->
+ 18 </configuration>
+----------------------------------------------------------------------------------------------------
+
