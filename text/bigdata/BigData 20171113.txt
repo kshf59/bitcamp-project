@@ -164,3 +164,224 @@ HADOOP_PID_DIR=/opt/hadoop/pids
 [hadoop@hadoop-master /etc/profile.d](51)# ssh hadoop-worker02 -C "sudo mv /etc/profile.d/hadoop2.sh /etc/profile.d/.hadoop2.sh"
 [hadoop@hadoop-master /etc/profile.d](52)# ssh hadoop-worker03 -C "sudo mv /etc/profile.d/hadoop2.sh /etc/profile.d/.hadoop2.sh"
 
+
+# start-dfs.sh
+
+# hadoop 
+Warning: $HADOOP_HOME is deprecated.
+Usage: hadoop [--config confdir] COMMAND
+where COMMAND is one of:
+  namenode -format     format the DFS filesystem
+  secondarynamenode    run the DFS secondary namenode
+  namenode             run the DFS namenode
+  datanode             run a DFS datanode
+  dfsadmin             run a DFS admin client
+  mradmin              run a Map-Reduce admin client
+  fsck                 run a DFS filesystem checking utility
+  fs                   run a generic filesystem user client
+  balancer             run a cluster balancing utility
+  oiv                  apply the offline fsimage viewer to an fsimage
+  fetchdt              fetch a delegation token from the NameNode
+  jobtracker           run the MapReduce job Tracker node
+  pipes                run a Pipes job
+  tasktracker          run a MapReduce task Tracker node
+  historyserver        run job history servers as a standalone daemon
+  job                  manipulate MapReduce jobs
+  queue                get information regarding JobQueues
+  version              print the version
+  jar <jar>            run a jar file
+  distcp <srcurl> <desturl> copy file or directories recursively
+  distcp2 <srcurl> <desturl> DistCp version 2
+  archive -archiveName NAME -p <parent path> <src>* <dest> create a hadoop archive
+  classpath            prints the class path needed to get the
+                       Hadoop jar and the required libraries
+  daemonlog            get/set the log level for each daemon
+ or
+  CLASSNAME            run the class named CLASSNAME
+Most commands print help when invoked w/o parameters.
+  --> hadoop 에 관한 명령어가 나온다
+
+# hadoop fs
+Warning: $HADOOP_HOME is deprecated.
+
+Usage: java FsShell
+           [-ls <path>]
+           [-lsr <path>]
+           [-du <path>]
+           [-dus <path>]
+           [-count[-q] <path>]
+           [-mv <src> <dst>]
+           [-cp <src> <dst>]
+           [-rm [-skipTrash] <path>]
+           [-rmr [-skipTrash] <path>]
+           [-expunge]
+           [-put <localsrc> ... <dst>]
+           [-copyFromLocal <localsrc> ... <dst>]
+           [-moveFromLocal <localsrc> ... <dst>]
+           [-get [-ignoreCrc] [-crc] <src> <localdst>]
+           [-getmerge <src> <localdst> [addnl]]
+           [-cat <src>]
+           [-text <src>]
+           [-copyToLocal [-ignoreCrc] [-crc] <src> <localdst>]
+           [-moveToLocal [-crc] <src> <localdst>]
+           [-mkdir <path>]
+           [-setrep [-R] [-w] <rep> <path/file>]
+           [-touchz <path>]
+           [-test -[ezd] <path>]
+           [-stat [format] <path>]
+           [-tail [-f] <file>]
+           [-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+           [-chown [-R] [OWNER][:[GROUP]] PATH...]
+           [-chgrp [-R] GROUP PATH...]
+           [-help [cmd]]
+
+Generic options supported are
+-conf <configuration file>     specify an application configuration file
+-D <property=value>            use value for given property
+-fs <local|namenode:port>      specify a namenode
+-jt <local|jobtracker:port>    specify a job tracker
+-files <comma separated list of files>    specify comma separated files to be copied to the map reduce cluster
+-libjars <comma separated list of jars>    specify comma separated jar files to include in the classpath.
+-archives <comma separated list of archives>    specify comma separated archives to be unarchived on the compute machines.
+
+The general command line syntax is
+bin/hadoop command [genericOptions] [commandOptions]
+
+  --> 하둡분산 파일 시스템의 명령어가 나온다
+
+[hadoop@hadoop-master /opt](16)# hadoop fs -ls /
+[hadoop@hadoop-master ~](18)# hadoop fs -put test.doc /test1.doc
+[hadoop@hadoop-master ~](22)# hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+-rw-------   2 hadoop supergroup          4 2017-11-12 14:41 /hadoop/mapred/system/jobtracker.info
+drwxr-xr-x   - hadoop supergroup          0 2017-11-13 16:34 /system
+-rw-r--r--   2 hadoop supergroup          6 2017-11-13 16:41 /test1.doc
+
+
+[hadoop@hadoop-master ~](23)# hadoop fs -cp /test1.doc /test2.doc
+Warning: $HADOOP_HOME is deprecated.
+
+[hadoop@hadoop-master ~](24)# hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+-rw-------   2 hadoop supergroup          4 2017-11-12 14:41 /hadoop/mapred/system/jobtracker.info
+drwxr-xr-x   - hadoop supergroup          0 2017-11-13 16:34 /system
+-rw-r--r--   2 hadoop supergroup          6 2017-11-13 16:41 /test1.doc
+-rw-r--r--   2 hadoop supergroup          6 2017-11-13 16:42 /test2.doc
+
+[hadoop@hadoop-master ~](25)# hadoop fs -cat /test1.doc
+Warning: $HADOOP_HOME is deprecated.
+
+hello
+
+[hadoop@hadoop-master ~](26)# hadoop fs -text /test2.doc
+Warning: $HADOOP_HOME is deprecated.
+
+hello
+
+  ---> cat 이나 text 로 파일을 볼수있다.
+
+[hadoop@hadoop-master ~](29)# hadoop fs -rm /test2.doc
+Warning: $HADOOP_HOME is deprecated.
+
+Deleted hdfs://hadoop-master:9000/test2.doc
+
+
+[hadoop@hadoop-master ~](33)# hadoop fs -mv /test1.doc /test2.doc
+Warning: $HADOOP_HOME is deprecated.
+
+[hadoop@hadoop-master ~](34)# hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+-rw-------   2 hadoop supergroup          4 2017-11-12 14:41 /hadoop/mapred/system/jobtracker.info
+drwxr-xr-x   - hadoop supergroup          0 2017-11-13 16:34 /system
+-rw-r--r--   2 hadoop supergroup          6 2017-11-13 16:41 /test2.doc
+
+
+[hadoop@hadoop-master ~](35)# hadoop fs -mkdir /user
+Warning: $HADOOP_HOME is deprecated.
+
+
+[hadoop@hadoop-master ~](36)# hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+-rw-------   2 hadoop supergroup          4 2017-11-12 14:41 /hadoop/mapred/system/jobtracker.info
+drwxr-xr-x   - hadoop supergroup          0 2017-11-13 16:34 /system
+-rw-r--r--   2 hadoop supergroup          6 2017-11-13 16:41 /test2.doc
+drwxr-xr-x   - hadoop supergroup          0 2017-11-13 16:46 /user
+
+
+[hadoop@hadoop-master ~](38)# hadoop fs -get /test2.doc .  
+    -->> 마지막에 . 을 하면 로컬에 복사된다.
+Warning: $HADOOP_HOME is deprecated.
+
+[hadoop@hadoop-master ~](39)# ll
+total 8
+-rw-rw-r--. 1 hadoop hadoop 6 Nov 13 17:06 test2.doc
+-rw-rw-r--. 1 hadoop hadoop 6 Nov 12 14:01 test.doc
+
+
+[hadoop@hadoop-master ~](46)# hadoop dfsadmin
+Warning: $HADOOP_HOME is deprecated.
+
+Usage: java DFSAdmin
+           [-report]
+           [-safemode enter | leave | get | wait]
+           [-saveNamespace]
+           [-refreshNodes]
+           [-finalizeUpgrade]
+           [-upgradeProgress status | details | force]
+           [-metasave filename]
+           [-refreshServiceAcl]
+           [-refreshUserToGroupsMappings]
+           [-refreshSuperUserGroupsConfiguration]
+           [-setQuota <quota> <dirname>...<dirname>]
+           [-clrQuota <dirname>...<dirname>]
+           [-setSpaceQuota <quota> <dirname>...<dirname>]
+           [-clrSpaceQuota <dirname>...<dirname>]
+           [-setBalancerBandwidth <bandwidth in bytes per second>]
+           [-help [cmd]]
+
+Generic options supported are
+-conf <configuration file>     specify an application configuration file
+-D <property=value>            use value for given property
+-fs <local|namenode:port>      specify a namenode
+-jt <local|jobtracker:port>    specify a job tracker
+-files <comma separated list of files>    specify comma separated files to be copied to the map reduce cluster
+-libjars <comma separated list of jars>    specify comma separated jar files to include in the classpath.
+-archives <comma separated list of archives>    specify comma separated archives to be unarchived on the compute machines.
+
+The general command line syntax is
+bin/hadoop command [genericOptions] [commandOptions]
+
+
+
+[hadoop@hadoop-master ~](40)# hadoop dfsadmin -safemode get
+Warning: $HADOOP_HOME is deprecated.
+
+Safe mode is OFF
+[hadoop@hadoop-master ~](41)# hadoop dfsadmin -safemode enter
+Warning: $HADOOP_HOME is deprecated.
+
+Safe mode is ON
+[hadoop@hadoop-master ~](42)# hadoop dfsadmin -safemode leave
+Warning: $HADOOP_HOME is deprecated.
+
+Safe mode is OFF
+[hadoop@hadoop-master ~](43)# hadoop dfsadmin -safemode wait
+Warning: $HADOOP_HOME is deprecated.
+
+Safe mode is OFF

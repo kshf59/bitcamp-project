@@ -15,11 +15,12 @@ $ sudo vi /etc/sudoers registration
     ...
 # chmod 777 /opt
 ---- 리눅스 권한 ----
-x =
+x = execute 
 y =
 z =
 l =
-w =
+w = write
+r = read
 ---- 리눅스 권한 ----
 kshf59@Bit:~$ df -k
 kshf59@Bit:~$ cd /mnt/c
