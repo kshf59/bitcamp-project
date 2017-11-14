@@ -239,3 +239,32 @@ FLUME_HOME=/opt/flume
     FLUME_CONF_DIR=/opt/flume/conf
     FLUME_HOME=/opt/flume
 # echo $PATH
+
+$ su hadoop
+$ cd /opt/flume/conf/
+$ mkdir template
+$ mv *.template template
+      --> 모든 template 파일을 새로만든 template 폴더에 옮긴다.
+$ cd template
+$ cp flume-env.sh.template ../flume-env.sh
+$ cp flume-conf.properties.template flume-conf.properties ../
+$ cd /opt/flume/conf/
+$ vi flume-env.sh
+      --> export JAVA_HOME=${JAVA_HOME} 추가
+   
+$ ssh hadoop-secmaster
+$ cd /opt/flume/conf/
+$ mkdir template
+$ mv *.template template
+      --> 모든 template 파일을 새로만든 template 폴더에 옮긴다.
+$ cd template
+$ cp flume-env.sh.template ../flume-env.sh
+$ cp flume-conf.properties.template flume-conf.properties ../
+$ cd /opt/flume/conf/
+$ vi flume-env.sh
+      --> export JAVA_HOME=${JAVA_HOME} 추가
+$ ssh hadoop-master
+$ flume-ng \
+  agent \
+  --conf-file /opt/flume/conf/flume-conf.properties \
+  --name agent -Dflume.root.logger=INFO,console
