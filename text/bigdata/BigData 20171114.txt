@@ -268,3 +268,192 @@ $ flume-ng \
   agent \
   --conf-file /opt/flume/conf/flume-conf.properties \
   --name agent -Dflume.root.logger=INFO,console
+$ mv flume-conf.properties flume-conf.properties.seq
+$ touch flume-conf.properties
+
+$ vi flume-conf.properties
+  2 netcat.sources = s1
+  3 netcat.channels = c1
+  4 netcat.sinks = k1
+  5
+  6
+  7 netcat.sources.s1.type = netcat
+  8 netcat.sources.s1.bind = 0.0.0.0
+  9 netcat.sources.s1.port = 44444
+ 10 netcat.sources.s1.channels =  c1
+ 11
+ 12
+ 13 netcat.channels.c1.type = memory
+ 14 netcat.channels.c1.capacity = 100
+ 15
+ 16
+ 17 netcat.sinks.k1.type = logger
+ 18 netcat.sinks.k1.channel = c1
+
+$  # flume-ng \
+   agent \
+   --name netcat \
+   --conf-file /opt/flume/conf/flume-conf.properties \
+   -Dflume.root.logger=INFO,console
+$ netstat -nlt
+$ sudo firewall-cmd --permanent --zone=public --add-port=44444/tcp
+    --> 방화벽 열기
+$ sudo firewall-cmd --reload
+$ sudo firewall-cmd --list-ports
+9000/tcp 50070/tcp 50090/tcp 50075/tcp 50020/tcp 50010/tcp 9001/tcp 50030/tcp 50060/tcp 39079/tcp 8020/tcp 8030/tcp 8031/tcp 8032/tcp 8088/tcp 50080/tcp 44444/tcp
+
+$  # flume-ng \
+   agent \
+   --name netcat \
+   --conf-file /opt/flume/conf/flume-conf.properties \
+   -Dflume.root.logger=INFO,console
+
+  * test *
+  1) open new terminal
+  2) ssh hadoop-secmaster ( NOT hadoop-master )
+  3) # telnet hadoop-master 44444
+Trying 192.168.252.131...
+Connected to hadoop-master.
+Escape character is '^]'.
+Hello!!! Flume !
+OK
+
+
+hadoop-master 접속
+
+$ vi flume-conf.properties
+:1,$s/netcat/tail/g
+    --> netcat 단어를 tail 로 바꿔주세요 (g)글로벌
+
+  2 tail.sources = s1
+  3 tail.channels = c1
+  4 tail.sinks = k1
+  5
+  6
+  7 tail.sources.s1.type = exec
+  8 tail.sources.s1.command = tail -f /var/log/secure
+  9 tail.sources.s1.channels =  c1
+ 10
+ 11
+ 12 tail.channels.c1.type = memory
+ 13 tail.channels.c1.capacity = 100
+ 14
+ 15
+ 16 tail.sinks.k1.type = logger
+ 17 tail.sinks.k1.channel = c1
+
+$ flume-ng agent --name tail --conf-file /opt/flume/conf/flume-conf.properties -Dflume.root.logger=INFO,console
+
+* test *
+1) open new terminal
+2) ssh hadoop-master
+   $ cd /var/log
+3) # sudo tail -40f secure
+    --> 40f 는 40줄 기본 default 값은 10줄
+4) open new terminal
+5) ssh hadoop-master
+6) check flume console
+  --->  ssh 접근의 로그가 secure 에서 찍힌다
+
+
+
+ /opt/flume/conf/flume-conf.properties, Create Workflow #4 - Multi-agent
+
+   1) on hadoop-master
+
+  1 hadoop-master.sources = s1
+  2 hadoop-master.channels = c1
+  3 hadoop-master.sinks = k1
+  4
+  5
+  6 hadoop-master.sources.s1.type = exec
+  7 hadoop-master.sources.s1.command = sudo tail -f /var/log/secure
+  8 hadoop-master.sources.s1.channels =  c1
+  9
+ 10 hadoop-master.channels.c1.type = memory
+ 11 hadoop-master.channels.c1.capacity = 100
+ 12
+ 13 hadoop-master.sinks.k1.type = avro
+ 14 hadoop-master.sinks.k1.hostname = hadoop-secmaster
+ 15 hadoop-master.sinks.k1.port = 10000
+ 16 hadoop-master.sinks.k1.channel = c1
+ 17
+
+  2) on hadoop-secmaster
+
+  1 hadoop-secmaster.sources = s1
+  2 hadoop-secmaster.channels = c1
+  3 hadoop-secmaster.sinks = k1
+  4
+  5
+  6 hadoop-secmaster.sources.s1.type = avro
+  7 hadoop-secmaster.sources.s1.bind = 0.0.0.0
+  8 hadoop-secmaster.sources.s1.port = 10000
+  9 hadoop-secmaster.sources.s1.channels =  c1
+ 10
+ 11 hadoop-secmaster.channels.c1.type = memory
+ 12 hadoop-secmaster.channels.c1.capacity = 100
+ 13
+ 14 hadoop-secmaster.sinks.k1.type = logger
+ 15 hadoop-secmaster.sinks.k1.channel = c1
+
+
+  * firewall open *
+  # sudo firewall-cmd --permanent --zone=public --add-port=10000/tcp
+	success
+  # sudo firewall-cmd --reload
+	success
+
+  # sudo firewall-cmd --list-ports
+   ... 10000/tcp
+
+
+  * 실행1 - hadoop-secmaster *
+
+  # flume-ng agent --name hadoop-secmaster --conf-file /opt/flume/conf/flume-conf.properties -Dflume.root.logger=INFO,console
+
+17/11/14 04:54:15 INFO node.Application: Starting Source s1
+17/11/14 04:54:15 INFO source.AvroSource: Starting Avro source s1: { bindAddress: 0.0.0.0, port: 10000 }...
+17/11/14 04:54:15 INFO instrumentation.MonitoredCounterGroup: Monitored counter group for type: SOURCE, name: s1: Successfully registered new MBean.
+17/11/14 04:54:15 INFO instrumentation.MonitoredCounterGroup: Component type: SOURCE, name: s1 started
+17/11/14 04:54:15 INFO source.AvroSource: Avro source s1 started.
+
+
+  * open new terminal on hadoop-secmaster
+  # netstat -nlt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN
+tcp6       0      0 :::111                  :::*                    LISTEN
+tcp6       0      0 :::10000                :::*                    LISTEN
+tcp6       0      0 :::39281                :::*                    LISTEN
+tcp6       0      0 :::22                   :::*                    LISTEN
+tcp6       0      0 ::1:25                  :::*                    LISTEN
+tcp6       0      0 :::50090                :::*                    LISTEN
+
+
+  * 실행2 - hadoop-master *
+
+  # flume-ng agent --name hadoop-master --conf-file /opt/flume/conf/flume-conf.properties -Dflume.root.logger=INFO,console
+
+17/11/14 04:54:47 INFO source.ExecSource: Exec source starting with command: sudo tail -f /var/log/secure
+17/11/14 04:54:47 INFO sink.AbstractRpcSink: Rpc sink k1: Building RpcClient with hostname: hadoop-secmaster, port: 10000
+17/11/14 04:54:47 INFO sink.AvroSink: Attempting to create Avro Rpc client.
+17/11/14 04:54:47 INFO instrumentation.MonitoredCounterGroup: Monitored counter group for type: SOURCE, name: s1: Successfully registered new MBean.
+17/11/14 04:54:47 INFO instrumentation.MonitoredCounterGroup: Component type: SOURCE, name: s1 started
+17/11/14 04:54:47 WARN api.NettyAvroRpcClient: Using default maxIOWorkers
+17/11/14 04:54:47 INFO sink.AbstractRpcSink: Rpc sink k1 started.
+
+
+  * tcp network session *
+
+  # netstat -nat | grep .10000
+tcp6       0      0 :::10000                :::*                    LISTEN
+tcp6       0      0 192.168.252.130:10000   192.168.252.131:59718   ESTABLISHED
+
+
+  * test *
+
+  # sudo echo "<33> hello via syslog" | nc -t localhost 5140 //안됨
