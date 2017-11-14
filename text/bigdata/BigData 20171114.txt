@@ -178,3 +178,64 @@
     2. 수집 테스트의 업무적 검토
       - 수집 데이터에 대한 개인정보보안, 저작권 관련 사항 등 업무적 검토
       - 협약기관에 많은 트래픽 발생시킬 경우, 제약사항 등 재 검토 필요
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+kshf59@Bit:/mnt/c/Users/Bitcamp/Downloads$
+------------------------------------------------------------------------------------------------------------
+kshf59@Bit:/mnt/c/Users/Bitcamp/Downloads$ scp apache-flume-1.8.0-bin.tar.gz hadoop@hadoop-master:/opt/.   |
+위에 방법 아니면 밑에 방법으로 리눅스에 넣는다                                                                 |
+kshf59@Bit:/mnt/c/Users/Bitcamp/Downloads$ sftp hadoop@hadoop-master                                       |
+sftp> put apache-flume-1.8.0-bin.tar.gz /opt/apache-flume-1.8.0-bin.tar.gz                  |
+------------------------------------------------------------------------------------------------------------
+위의 방법보다는 사이트에서 링크 복사를 해서 바로 다운로드 하는걸 추천한다.
+
+[hadoop@hadoop-master /opt](9)# wget http://www.apache.org/dist/flume/stable/apache-flume-1.8.0-bin.tar.gz
+
+$ gzip -d apache-flume-1.8.0-bin.tar.gz  압축을 해재하는것  -d 는 해재 하라는 명령어
+$ gzip apache-flume-1.8.0-bin.tar        압축을 gzip으로 하라는 것
+$ tar tvf apache-flume-1.8.0-bin.tar     폴더의 구조를 보는것  gzip 이 아니라서 tvf 에서 z 뺌
+$ tar xvf apache-flume-1.8.0-bin.tar     tar 압축 풀기
+
+$ ln -s /opt/apache-flume-1.8.0-bin /opt/flume
+    -->>  flume의 소프트링크를 걸어주거라
+
+[hadoop@hadoop-master /opt](26)# ll
+total 12
+drwxrwxr-x.  7 hadoop hadoop  187 Nov 14 11:42 apache-flume-1.8.0-bin
+lrwxrwxrwx.  1 hadoop hadoop   27 Nov 14 11:49 flume -> /opt/apache-flume-1.8.0-bin
+lrwxrwxrwx.  1 hadoop hadoop   17 Nov 13 15:01 hadoop -> /opt/hadoop-1.2.1
+drwxr-xr-x. 16 hadoop hadoop 4096 Nov 11 22:40 hadoop-1.2.1
+drwxr-xr-x. 11 hadoop hadoop  173 Nov 12 09:01 hadoop-2.8.2
+lrwxrwxrwx.  1 root   root     17 Nov  5 14:04 java -> /opt/jdk1.8.0_152
+drwxr-xr-x.  8 root   root    255 Sep 14 18:27 jdk1.8.0_152
+-rwxrw-r--.  1 hadoop hadoop   51 Nov 13 15:03 mvHadoop1to2.sh
+-rwxrw-r--.  1 hadoop hadoop   51 Nov 12 14:34 mvHadoop2to1.sh
+
+$ ssh hadoop-secmaster
+$ wget http://www.apache.org/dist/flume/stable/apache-flume-1.8.0-bin.tar.gz
+$ ln -s /opt/apache-flume-1.8.0-bin /opt/flume
+
+$ sudo su -root
+# cd /etc/profile.dist
+# touch flume.sh
+# vi flume.sh
+      1 export FLUME_HOME=/opt/flume
+      2 export FLUME_CONF_DIR=${FLUME_HOME}/conf
+      3 export PATH=${FLUME_HOME}/bin:${PATH}
+# source /etc/profile
+
+[root@hadoop-secmaster /etc/profile.d](5)# env | grep FLUME
+FLUME_CONF_DIR=/opt/flume/conf
+FLUME_HOME=/opt/flume
+[root@hadoop-secmaster /etc/profile.d](6)# echo $PATH
+.:/opt/java/bin:/opt/hadoop/bin:/opt/flume/bin:.:/opt/java/bin:/opt/hadoop/bin:
+.:/opt/java/bin:/opt/hadoop/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/hadoop/.local/bin:/home/hadoop/bin
+
+# scp flume.sh root@hadoop-master:/etc/profile.d/.
+    --> root 권한이기 때문에 root@ 로 한다
+# ssh hadoop-master
+# env | grep FLUME
+    FLUME_CONF_DIR=/opt/flume/conf
+    FLUME_HOME=/opt/flume
+# echo $PATH
