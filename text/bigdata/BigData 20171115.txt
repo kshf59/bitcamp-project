@@ -1,0 +1,265 @@
+﻿빅데이터
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+15. /opt/flume/conf/flume-conf.properties, Create Workflow #5 - hdfs
+
+  * on hadoop-secmaster *
+
+  1 hdfs.sources = s1
+  2 hdfs.channels = c1
+  3 hdfs.sinks = k1 k2
+  4
+  5
+  6 hdfs.sources.s1.type = exec
+  7 hdfs.sources.s1.command = sudo tail -f /var/log/secure
+  8 hdfs.sources.s1.channels = c1
+  9
+ 10 hdfs.channels.c1.type = memory
+ 11 hdfs.channels.c1.capacity = 100
+ 12
+ 13 hdfs.sinks.k1.type = logger
+ 14 hdfs.sinks.k1.channel = c1
+ 15
+ 16 hdfs.sinks.k2.type = hdfs
+ 17 hdfs.sinks.k2.hdfs.path = hdfs://hadoop-master:9000/flume/events/%y-%m-%d/%H%M/
+ 18 hdfs.sinks.k2.hdfs.writeFormat = Text
+ 19 hdfs.sinks.k2.channel = c1
+
+  
+   * Connection test to hdfs on hadoop-master *
+   # telnet hadoop-master 9000
+Trying 192.168.252.131...
+Connected to hadoop-master.
+Escape character is '^]'.
+^]quit
+
+telnet> quit
+Connection closed.
+
+   
+   * 실행 *
+
+   # flume-ng agent --name hdfs --conf-file=/opt/flume/conf/flume-conf.properties -Dflume.root.logger=INFO,console
+
+   ...
+   17/11/14 05:07:20 ERROR flume.SinkRunner: Unable to deliver event. Exception follows.
+org.apache.flume.EventDeliveryException: java.lang.NullPointerException: Expected timestamp in the Flume event headers, but it was null
+        at org.apache.flume.sink.hdfs.HDFSEventSink.process(HDFSEventSink.java:451)
+        at org.apache.flume.sink.DefaultSinkProcessor.process(DefaultSinkProcessor.java:67)
+        at org.apache.flume.SinkRunner$PollingRunner.run(SinkRunner.java:145)
+        at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.NullPointerException: Expected timestamp in the Flume event headers, but it was null
+        at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:204)
+        at org.apache.flume.formatter.output.BucketPath.replaceShorthand(BucketPath.java:251)
+        at org.apache.flume.formatter.output.BucketPath.escapeString(BucketPath.java:460)
+        at org.apache.flume.sink.hdfs.HDFSEventSink.process(HDFSEventSink.java:368)
+        ... 3 more
+
+
+    **** No timestamp header ****    
+
+  ...
+  6 hdfs.sources.s1.type = exec
+  7 hdfs.sources.s1.command = sudo tail -f /var/log/secure
+  8 hdfs.sources.s1.channels = c1
+
+  9 hdfs.sources.s1.interceptors = i1
+ 10 hdfs.sources.s1.interceptors.i1.type = timestamp
+   ...
+
+
+   * 재실행 *
+
+   # flume-ng agent --name hdfs --conf-file=/opt/flume/conf/flume-conf.properties -Dflume.root.logger=INFO,console
+
+
+   * Test *
+
+   # nc -l 5170
+
+   #netstat -nlt
+   # for i in `seq 1 100`; do sudo echo hello$i | nc -t localhost 5140; done
+
+
+   * check hadoop hdfs on hadoop-secmaster *
+
+   # ssh trinity@hadoop-secmaster
+   # hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume/events
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume/events/17-11-14
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:11 /flume/events/17-11-14/0510
+-rw-r--r--   2 hadoop supergroup       1436 2017-11-14 05:10 /flume/events/17-11-14/0510/FlumeData.1510603844448
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+lsr: could not get get listing for 'hdfs://hadoop-master:9000/hadoop/mapred/system' : org.apache.hadoop.security.AccessControlException: Permission denied: user=trinity, access=READ_EXECUTE, inode="system":hadoop:supergroup:rwx------
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:16 /system
+
+   # sudo su - hadoop
+   # hadoop fs -lsr /
+Warning: $HADOOP_HOME is deprecated.
+
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume/events
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:10 /flume/events/17-11-14
+drwxr-xr-x   - hadoop supergroup          0 2017-11-14 05:11 /flume/events/17-11-14/0510
+-rw-r--r--   2 hadoop supergroup       1436 2017-11-14 05:10 /flume/events/17-11-14/0510/FlumeData.1510603844448
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:09 /hadoop
+drwxr-xr-x   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred
+drwx------   - hadoop supergroup          0 2017-11-12 14:41 /hadoop/mapred/system
+-rw-------   2 hadoop supergroup          4 2017-11-12 14:41 /hadoop/mapred/system/jobtracker.info
+drwxr-xr-x   - hadoop supergroup          0 2017-11-11 22:16 /system
+
+
+	# hadoop fs -text /flume/events/17-11-14/0510/FlumeData.1510603844448
+Warning: $HADOOP_HOME is deprecated.
+
+1510603843475   Nov 14 04:56:22 hadoop-secmaster sshd[6316]: Disconnected from 192.168.252.1 port 53782
+1510603843475   Nov 14 04:56:22 hadoop-secmaster sshd[6312]: pam_unix(sshd:session): session closed for user trinity
+1510603843475   Nov 14 05:00:02 hadoop-secmaster su: pam_unix(su-l:session): session closed for user hadoop
+1510603843475   Nov 14 05:00:02 hadoop-secmaster sshd[5380]: Received disconnect from 192.168.252.1 port 53604:11: disconnected by user
+1510603843475   Nov 14 05:00:02 hadoop-secmaster sshd[5380]: Disconnected from 192.168.252.1 port 53604
+1510603843475   Nov 14 05:00:02 hadoop-secmaster sshd[5376]: pam_unix(sshd:session): session closed for user trinity
+1510603843475   Nov 14 05:05:03 hadoop-secmaster sshd[6465]: Accepted publickey for hadoop from 192.168.252.131 port 48616 ssh2: RSA SHA256:G6UsxznXjMv9Uscr2Y+LpzDW9hEpzbc//MNpDLZq7rw
+1510603843475   Nov 14 05:05:04 hadoop-secmaster sshd[6465]: pam_unix(sshd:session): session opened for user hadoop by (uid=0)
+1510603843475   Nov 14 05:07:11 hadoop-secmaster sudo:  hadoop : TTY=pts/0 ; PWD=/opt/apache-flume-1.8.0-bin/conf ; USER=root ; COMMAND=/bin/tail -f /var/log/secure
+1510603843475   Nov 14 05:10:40 hadoop-secmaster sudo:  hadoop : TTY=pts/0 ; PWD=/opt/apache-flume-1.8.0-bin/conf ; USER=root ; COMMAND=/bin/tail -f /var/log/secure
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+$ sudo mkdir -p /hadoop/mapred/local
+    --> 각노드에 만들어라
+$ ssh hadoop-master
+$ yum makecache fast
+$ sudo yum -y install mariadb.x86_64  << mysql client
+$ sudo yum -y install mariadb-server  << mysql server
+  --> 여기까지만 설치해도된다.
+------------------------------------------------------------------------------------------
+$ sudo yum -y install mytop innotop   << mysql monitor tool
+$ sudo yum -y install mysqlreport mysqltuner  << mysql tunner
+$ sudo yum -y install mysql-connector-python mysql-connector-java  << mysql connector 
+-------------------------------------------------------------------------------------------
+$ systemctl status mariadb
+$ cat /etc/my.cnf
+$ sudo vi /usr/lib/systemd/system/mariadb.service
+    ---> ExecStart=/usr/bin/mysqld_safe --basedir=/usr --log-warnings 추가
+$ sudo systemctl start mariadb
+$ sudo systemctl status mariadb
+$ cd
+$ wget http://downloads.mysql.com/docs/sakila-db.tar.gz
+$ tar xvfz sakila-db.tar.gz
+$ cd sakila-db/
+$ mysql -u root
+MariaDB [(none)]> source sakila-schema.sql
+MariaDB [sakila]> ssource sakila-data.sql
+MariaDB [sakila]> show databases;
+MariaDB [sakila]> use sakila;
+MariaDB [sakila]> show tables;
+
+# netstat -nlt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN <-------- **** mysql listen port
+tcp6       0      0 :::111                  :::*                    LISTEN
+tcp6       0      0 :::50070                :::*                    LISTEN
+tcp6       0      0 :::22                   :::*                    LISTEN
+tcp6       0      0 ::1:25                  :::*                    LISTEN
+tcp6       0      0 :::34108                :::*                    LISTEN
+tcp6       0      0 192.168.252.131:9000    :::*                    LISTEN
+
+$ mysql -u root
+
+MariaDB [(none)]> create user 'sakila'@'localhost' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> create user 'sakila'@'hadoop-master' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> create user 'sakila'@'hadoop-secmaster' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> create user 'sakila'@'hadoop-worker01' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> create user 'sakila'@'hadoop-worker02' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> create user 'sakila'@'hadoop-worker03' identified by 'sakila';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'hadoop-worker01';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'hadoop-worker02';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'hadoop-worker03';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'hadoop-secmaster';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> grant all privileges on sakila.* to 'sakila'@'hadoop-master';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> flush privileges;
+
+$ sudo firewall-cmd --permanent --zone=public --add-port=3306/tcp
+$ sudo firewall-cmd --reload
+$ sudo firewall-cmd --list-ports
+
+---------------------------------------------------------------
+7. Download & Install SQOOP into /opt
+---------------------------------------------------------------
+# ssh hadoop-secmaster
+# cd /opt
+# wget http://apache.tt.co.kr/sqoop/1.4.6/sqoop-1.4.6.bin__hadoop-1.0.0.tar.gz
+# tar tvfz sqoop-1.4.6.bin__hadoop-1.0.0.tar.gz
+# tar xvfz sqoop-1.4.6.bin__hadoop-1.0.0.tar.gz
+# ln -s /opt/sqoop-1.4.6.bin__hadoop-1.0.0 sqoop
+# sudo su - root
+# cd /etc/profile.d/
+# touch sqoop.sh
+      1 export SQOOP_HOME=/opt/sqoop
+      2
+      3 export PATH=${SQOOP_HOME}/bin:${PATH}
+
+# logout
+# sudo su - root
+# echo $PATH
+.:/opt/sqoop/bin:/opt/java/bin:/opt/hadoop/bin:/opt/hadoop/sbin:/opt/flume/bin:...
+# env | grep SQOOP
+SQOOP_HOME=/opt/sqoop
+
+# ssh hadoop-secmaster
+# su hadoop
+# cd /opt/sqoop/bin
+# mkdir cmd
+# mv *.cmd cmd
+# vi configure-sqoop
+...
+232
+233 export HADOOP_HOME=${HADOOP_HOME}
+234
+
+# cd /opt/sqoop/lib
+# wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.34.tar.gz
+# tar xvfz mysql-connector-java-5.1.44.tar.gz mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar
+    --> mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar 이렇게 뜸
+
+# mv mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar /opt/sqoop/lib/.
+
+$ sqoop import --connect jdbc:mysql://hadoop-master:3306/sakila --table city --username sakila --P --m 1 --target-dir /user/hadoop/city_001
