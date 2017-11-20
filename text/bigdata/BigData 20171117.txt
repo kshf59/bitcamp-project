@@ -1,0 +1,140 @@
+﻿빅데이터
+
+
+---------------------------------------------------------------
+1. scrapy v1.4.0 for python2/3 install on centos 7
+---------------------------------------------------------------
+
+# sudo su - root
+
+# yum makecache fast
+
+# yum -y install openssl-devel* ncurses-devel* zlib*.x86_64
+# yum -y install bzip2 bzip2-devel bzip2-libs
+# yum -y install libffi-devel
+# yum -y install python-devel
+
+# easy_install PyOpenSSl
+# easy_install PyCrypto
+# yum install libxslt-devel libxml2-devel
+# easy_install lxml
+
+# pip install Scrapy
+
+# pip install --upgrade pyopenssl
+# pip install Twisted==16.4.1
+
+* hadoop 계정으로 시작 *
+
+$ cd
+$ mkdir scrapy
+$ cd scrapy
+$ scrapy startproject ProjectName
+New Scrapy project 'ProjectName', using template directory '/usr/lib/python2.7/site-packages/scrapy/templates/project', created in:
+    /home/hadoop/scrapy/ProjectName
+
+You can start your first spider with:
+    cd ProjectName
+    scrapy genspider example example.com
+
+$ tree ProjectName/
+
+ProjectName/				<-- Project Root Directory
+├── ProjectName				<-- Main Directory ( = ProjectName )
+│   ├── __init__.py 		<-- Python Package Initialization Method ( Python Package )
+│   ├── items.py***			<-- Items Settings ( A Container for storing Crawled Data )
+│   ├── middlewares.py 		<-- Manage Middleware ( Scheduler / Downloader / Spider )
+│   ├── pipelines.py** 		<-- Define Store Methods of the Crawled Data
+│   ├── settings.py 		<-- Manage Spider Bots
+│   └── spiders*** 			<-- Store Spider Bots ( A Core responsible for Crawling )
+│       └── __init__.py 	<-- Python Package Initialization Method ( Python Package )
+└── scrapy.cfg				<-- Project Settings
+
+2 directories, 7 files
+
+---------------------------------------------------------------
+2. items.py ( Item : A Container for storing Scraped Data )
+---------------------------------------------------------------
+
+1) Programming Exercise
+
+      1 # -*- coding: utf-8 -*-
+      2
+      3 # Define here the models for your scraped items
+      4 #
+      5 # See documentation in:
+      6 # http://doc.scrapy.org/en/latest/topics/items.html
+      7
+      8 import scrapy
+      9
+     10
+     11 class ProjectnameItem(scrapy.Item):
+     12     # define the fields for your item here like:
+     13     # name = scrapy.Field()
+     14
+     15     title = scrapy.Field()
+     16     link = scrapy.Field()
+     17     desc = scrapy.Field()
+     18
+     19     pass
+
+[hadoop@hadoop-master /home/hadoop/scrapy/ProjectName/ProjectName](24)$ python
+Python 2.7.5 (default, Aug  4 2017, 00:39:18)
+[GCC 4.8.5 20150623 (Red Hat 4.8.5-16)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import scrapy
+>>> class ProjectnameItem(scrapy.Item):
+...     title = scrapy.Field()
+...     link = scrapy.Field()
+...     desc = scrapy.Field()
+...
+...     pass
+...
+>>> item = ProjectnameItem()
+>>> item['title'] = 'Example Title'
+>>> item['title']
+'Example Title'
+>>>
+
+---------------------------------------------------------------
+3. Spider ( A Core responsible for Crawling )
+---------------------------------------------------------------
+
+1) Required Components
+   - name : Spider's Name (must be Unique in the project )
+   - start_urls : Starting URLs for Crawling
+   - parse() : return the scraped data of response for each URLs
+cd 
+
+[hadoop@hadoop-master ~/scrapy/ProjectName/ProjectName/spiders](148)# touch TestSpider.py
+
+2) Programming Exercise ( spiders/TestSpider.py )
+
+  1 import scrapy
+  2
+  3
+  4 class TestSpider( scrapy.Spider ):
+  5
+  6     name = 'TestSpider'
+  7
+  8     allowed_domains = [ "dmoz.org" ]
+  9     start_urls = [
+ 10                     "http://www.dmoz.org/computers/Programming/Languages/Python/Books/",
+ 11                     "http://www.dmoz.org/computers/Programming/Languages/Python/Resources/"
+ 12                  ]
+ 13
+ 14
+ 15     def parse(self, response):
+ 16         fname = response.url.split("/")[-2]
+ 17
+ 18         with open( fname, "wb" ) as f:
+ 19             f.write(response.body)
+ 20
+ 21         pass
+ 22
+ 23
+ 24     pass
+
+
+ 
+
