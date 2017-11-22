@@ -1,6 +1,6 @@
 const request = require('request');
 
-require('dotenv').config({ path: '/home/ec2-user/vars/.env' })
+//require('dotenv').config({ path: '/home/ec2-user/vars/.env' })
 
 const searchNewAddress = (type,searchWord) => {
     var uri = 'http://openapi.epost.go.kr/postal/retrieveNewAdressAreaCdService/retrieveNewAdressAreaCdService/getNewAddressListAreaCd';
@@ -29,11 +29,10 @@ const searchNewAddress = (type,searchWord) => {
 };
 
 //searchNewAddress('road', '충장로123번길 26');
-searchNewAddress('dong', '행신동 1002');
+//searchNewAddress('dong', '행신동 1002');
 //searchNewAddress('post', '17512');
 
-/*
+
 module.exports = {
     searchNewAddress
 };
-*/
