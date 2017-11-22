@@ -30,7 +30,8 @@ const searchNewAddress = (type,searchWord) => {
 searchNewAddress('dong', '행신동 1002');
 //searchNewAddress('post', '17512');
 
-
+/*
 module.exports = {
     searchNewAddress
 };
+*/
