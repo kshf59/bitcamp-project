@@ -33,24 +33,6 @@ const sendImageMessage = (recipientId) => {
     api.callMessagesAPI(messageData);
 };
 
-const sendImageMessage = (recipientId) => {
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        "attachment":{
-          "type":"image", 
-          "payload":{
-            "url":"http://ppss.kr/wp-content/uploads/2016/04/%ED%8A%B8%EB%9F%BC%ED%94%8401-549x411.jpg", 
-            "is_reusable":true
-          }
-        }
-      }
-    };
-  
-    api.callMessagesAPI(messageData);
-};
 
 const sendMenuMessage = (recipientId) => {
   var messageData = {
@@ -230,5 +212,6 @@ const sendGenericMessage = (recipientId) => {
 
 module.exports = {
     sendTextMessage,
-    sendLedMessage
+    sendLedMessage,
+    sendMenuMessage
 };
