@@ -14,16 +14,17 @@ const handleReceiveMessage = (event) => {
     var messageAttachments = message.attachments; 
     
     var menu = global[senderID].menu; //사용자의 현재 메뉴
-
-    if(menu == 'calc') {
+    
+    if (messageText == 'help') {
+        sendAPI.sendMenuMessage(senderID);
+        // 현재 메뉴를 출력한 상태
+        global[senderID].menu = 'help';
+    
+    } else if(menu == 'calc') {
         // 현재 계산기 메뉴일 때는 사용자가 입력한 값이
         // 계간식이라고 가정하고 메세지를 분석한다.
         menuCalc(senderID, messageText);
 
-    } else if (messageText == 'help') {
-        sendAPI.sendMenuMessage(senderID);
-        // 현재 메뉴를 출력한 상태
-        global[senderID].menu = 'help';
     } else if (messageText.startsWith('searchAddress:')) {
         try {
         var arr = messageText.split(':')[1].split('=')
@@ -94,7 +95,7 @@ const menuCalc = (senderID, messageText) => {
     try {
         var tokens = messageText.split(' ');
         if (tokens.length != 3)
-            throw '형식이 맞지 않음'
+            throw '형식이 맞지 않음';
         var a = parseInt(tokens[0]);
         var op = tokens[1]
         var b = parseInt(tokens[2])
