@@ -57,7 +57,7 @@ const handleReceivePostback = (event) => {
         menuHelp(senderID, payload)
     } else if (menu == 'led') {
         menuLed(senderID, payload);
-    } else if (menu == 'addr') {
+    } else if (menu.startsWith('addr')) {
         menuAddr(senderID, payload)
     } 
 
