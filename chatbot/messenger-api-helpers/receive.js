@@ -57,9 +57,11 @@ const handleReceivePostback = (event) => {
         menuHelp(senderID, payload)
     } else if (menu == 'led') {
         menuLed(senderID, payload);
-    } else if (menu.startsWith('addr')) {
+    } else if (menu = 'addr') {
         menuAddr(senderID, payload)
-    } 
+    } else {
+        sendAPI.sendTextMessage(senderID, "메뉴를 다시 요청하세요!");
+    }
 
                /*
     if (payload == 'led_on') {
