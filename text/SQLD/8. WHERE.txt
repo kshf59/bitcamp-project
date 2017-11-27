@@ -89,3 +89,22 @@ ROWNUM
 
     - Oracle ROWNUM은 칼럼과 비슷한 성격의 Pseudo Column으로써 SQL 처리 결과 집합의 각 행에 대해 임시로 부여되는 일련번호
     - 테이블이나 집합에서 원하는 만큼의 행만 가져오고 싶을때 WHERE 절에서 행의 개수를 제한하는 목적으로 사용(MYSQL LIMIT과 유사)
+    - 1건의 행만 가져오고 싶다?
+        - SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM = 1;
+        - SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM <= 1;
+        - SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM < 2;
+    - 두 건 이상의 N행을 가져오고 싶을 때는?
+        - SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM <= N;
+        - SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM < N+1;
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+TOP 절
+    - SQL SERVER TOP절을 사용하여 결과 집합으로 출력되는 행의 수 제한
+    - TOP (Expression) [PERCENT] [WITH TIES]
+        - Expression : 반환할 행의 수를 지정하는 숫자이다.
+        - PERCENT : 쿼리 결과 집합에서 처음 Expression%의 행만 반환됨을 나타낸다.
+        - WITH TIES : ORDER BY 절이 지정된 경우에만 사용할 수 있으며, TOPN(PERCENT)의 마지막 행과 같은 값이 있는 경우 추가 행이 출력되도록 지정
+    - 한건의 행만 가져오고 싶을때
+        - SELECT TOP(1) PLAYER_NAME FROM PLAYER;
+        - SELECT TOP(N) PLAYER_NAME FROM PLAYER;

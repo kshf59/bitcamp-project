@@ -32,6 +32,61 @@ const sendImageMessage = (recipientId) => {
   
     api.callMessagesAPI(messageData);
 };
+
+const sendImageMessage = (recipientId) => {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        "attachment":{
+          "type":"image", 
+          "payload":{
+            "url":"http://ppss.kr/wp-content/uploads/2016/04/%ED%8A%B8%EB%9F%BC%ED%94%8401-549x411.jpg", 
+            "is_reusable":true
+          }
+        }
+      }
+    };
+  
+    api.callMessagesAPI(messageData);
+};
+
+const sendMenuMessage = (recipientId) => {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      "attachment":{
+        "type":"template",
+        "payload":{
+          "template_type":"button",
+          "text":"메뉴",
+          "buttons":[
+            {
+              "type":"postback",
+              "title":"Led",
+              "payload":"menu_led"
+            },
+            {
+              "type":"postback",
+              "title":"주소검색",
+              "payload":"menu_addr"
+            },
+            {
+              "type":"postback",
+              "title":"계산기",
+              "payload":"menu_calc"
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  api.callMessagesAPI(messageData);
+};
   
 const sendButton1Message = (recipientId) => {
     var messageData = {
