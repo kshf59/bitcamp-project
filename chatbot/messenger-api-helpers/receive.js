@@ -93,6 +93,8 @@ const menuCalc = (senderID, messageText) => {
 
     try {
         var tokens = messageText.split(' ');
+        if (tokens.length != 3)
+            throw '형식이 맞지 않음'
         var a = parseInt(tokens[0]);
         var op = tokens[1]
         var b = parseInt(tokens[2])
