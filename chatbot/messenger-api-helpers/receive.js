@@ -54,8 +54,9 @@ const handleReceivePostback = (event) => {
     } else if (payload == 'led_off') {
         sendAPI.sendTextMessage(senderID, "전구를 끄겠습니다.");
     }
+    */
 };
-*/
+
 
 
 
