@@ -1,5 +1,6 @@
 const sendAPI = require('./send');
 const openAPI = require('../rest-api/openapi')
+
 const handleReceiveMessage = (event) => {
     var senderID = event.sender.id;
     var recipientID = event.recipient.id;
@@ -14,6 +15,7 @@ const handleReceiveMessage = (event) => {
     var messageAttachments = message.attachments; 
     
     var menu = global[senderID].menu; //사용자의 현재 메뉴
+
     
     if (messageText == 'help') {
         sendAPI.sendMenuMessage(senderID);
@@ -24,15 +26,16 @@ const handleReceiveMessage = (event) => {
         // 현재 계산기 메뉴일 때는 사용자가 입력한 값이
         // 계간식이라고 가정하고 메세지를 분석한다.
         menuCalc(senderID, messageText);
-
-    } else if (messageText.startsWith('searchAddress:')) {
+    } else if (menu.startsWith('addr_')) { // 동,도로명, 우편번호를 검색한다면,.
         try {
-        var arr = messageText.split(':')[1].split('=')
-        openAPI.searchNewAddress(arr[0],arr[1], (msg) =>{
+        var type = menu.substring(5);
+        var searchWord = messageText;
+        openAPI.searchNewAddress(type,searchWord, (msg) =>{
             sendAPI.sendTextMessage(senderID, msg);
         });
         } catch (err) {
-            console.log(err)
+            sendAPI.sendTextMessage('주소 검색을 할 수 없습니다.')
+            console.log(err);
         }
     } else {
         sendAPI.sendTextMessage(senderID, messageText);
@@ -54,7 +57,9 @@ const handleReceivePostback = (event) => {
         menuHelp(senderID, payload)
     } else if (menu == 'led') {
         menuLed(senderID, payload);
-    }
+    } else if (menu == 'addr') {
+        menuAddr(senderID, payload)
+    } 
 
                /*
     if (payload == 'led_on') {
@@ -76,7 +81,8 @@ const menuHelp = (senderID, payload)  => {
         sendAPI.sendTextMessage(senderID, '식을 입력하세요. \nex) 2+3')
         global[senderID].menu = 'calc'
     } else if (payload == 'menu_addr') {
-        console.log('주소검색 메뉴를 눌렀네요!')
+        sendAPI.sendAddressSearchMessage(senderID,)
+        global[sendrID].menu = 'addr' // 이 사용자의 현재 메뉴는 주소검색이다.   
     }
 }
 
@@ -115,6 +121,20 @@ const menuCalc = (senderID, messageText) => {
         sendAPI.sendTextMessage(senderID, "계산식 형식이 옳지 않습니다.")
     }
 }
+
+const menuAddr = (senderID, payload) => {
+    if (payload == 'addr_dong') {
+        sendAPI.sendTextMessage(senderID, '동 이름?')
+        global[senderID].menu = 'addr_dong'
+    } else if (payload == 'addr_load') {
+        sendAPI.sendTextMessage(senderID, '도로명?')
+        global[senderID].menu = 'addr_load'
+    } else if (payload == 'addr_post') {
+        sendAPI.sendTextMessage(senderID, '우편번호?')
+        global[senderID].menu = 'addr_post'
+    }        
+}
+
 module.exports = {
     handleReceiveMessage,
     handleReceivePostback
