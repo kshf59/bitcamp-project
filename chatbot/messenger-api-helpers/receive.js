@@ -13,11 +13,12 @@ const handleReceiveMessage = (event) => {
     var messageText = message.text;
     var messageAttachments = message.attachments; 
     
-    console.log('user ====>', global[senderID].user)
-    
+
+
     if (messageText == 'help') {
         sendAPI.sendMenuMessage(senderID);
-
+        // 현재 메뉴를 출력한 상태
+        global[senderID].menu = 'help';
     } else if (messageText.startsWith('searchAddress:')) {
         try {
         var arr = messageText.split(':')[1].split('=')
@@ -41,12 +42,32 @@ const handleReceivePostback = (event) => {
     console.log("Received postback for user %d and page %d with payload '%s' at %d",
                senderID, recipientID, payload, timeOfPostback);
 
+
+    var menu = global[senderID].menu;
+    if(menu == 'help') {
+        menuHelp(senderID, payload)
+    }
+
+               /*
     if (payload == 'led_on') {
         sendAPI.sendTextMessage(senderID, "전구를 켜겠습니다.");
     } else if (payload == 'led_off') {
         sendAPI.sendTextMessage(senderID, "전구를 끄겠습니다.");
     }
 };
+*/
+
+
+
+const menuHelp = (senderID, payload)  => {
+    if (payload == 'menu_led') {
+        console.log("led 메뉴를 눌렀네요!")
+    } else if (payload == 'menu_calc') {
+        console.log('계산기 메뉴를 눌렀네요!')
+    } else if (payload == 'menu_addr') {
+        console.log('주소검색 메뉴를 눌렀네요!')
+    }
+}
 
 module.exports = {
     handleReceiveMessage,
