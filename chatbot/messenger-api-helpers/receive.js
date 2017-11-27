@@ -13,8 +13,11 @@ const handleReceiveMessage = (event) => {
     var messageText = message.text;
     var messageAttachments = message.attachments; 
     
+    console.log('user ====>', global[senderID].user)
+    
     if (messageText == 'help') {
         sendAPI.sendMenuMessage(senderID);
+
     } else if (messageText.startsWith('searchAddress:')) {
         try {
         var arr = messageText.split(':')[1].split('=')
