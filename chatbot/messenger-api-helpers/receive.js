@@ -82,7 +82,7 @@ const menuHelp = (senderID, payload)  => {
         global[senderID].menu = 'calc'
     } else if (payload == 'menu_addr') {
         sendAPI.sendAddressSearchMessage(senderID,)
-        global[sendrID].menu = 'addr' // 이 사용자의 현재 메뉴는 주소검색이다.   
+        global[senderID].menu = 'addr' // 이 사용자의 현재 메뉴는 주소검색이다.   
     }
 }
 
