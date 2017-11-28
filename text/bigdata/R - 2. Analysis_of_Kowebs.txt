@@ -1,0 +1,468 @@
+﻿0. 사전 패키지 준비
+
+> install.packages('foreign')		# load SPSS file
+> install.packages('dplyr')			# Preprocessing
+> install.packages('ggplot2')		# Visualization
+> install.packages('readxl')		# load Excel file
+
+> library(foreign)
+> library(dplyr)
+> library(ggplot2)
+> library(readxl)
+
+
+1. 한국보건사회연구원 공개자료 로딩
+								  ******
+> kowebs <- read.spss(file='./kowebs/Koweps_h11_2016_beta1.sav', to.data.frame = T)
+> ko2016 <- kowebs
+
+
+2. 데이터 탐색
+   ** By using: head(), tail(), View(), dim(), str(), summary(), table(), ...
+
+   	1) head()
+		> head(ko2016, 6) *
+   	2) tail()
+		> tail(ko2016, 6) *
+	3) View()
+		> View( head(ko2016, 6) )
+	4) dim()
+		> dim(ko2016)
+		[1] 15989   842
+		> 
+	5) str()
+		> str(ko2016)
+	6) summary(ko2016)
+	7) table(ko2016)
+
+
+3. 데이터 정제(가공, Preprocessing)
+
+	1) 추가 패키지 설치 및 로딩
+		> install.packages('WriteXLS')
+		> library(WriteXLS)
+
+	2) 데이터 컬럼속성 얻어내기
+		> attributes(ko2016)
+		> ko2016_labels <- attr(ko2016, 'variable.labels')
+
+	3) 데이터의 CSV Export
+		#> write.table(ko2016,file='kowebs/ko2016_2.csv',sep=',', col.names = T, row.names = F)
+		> write.csv(ko2016, file='kowebs/ko2016.csv')
+		> ko2016_labels <- attr(ko2016, 'variable.labels')
+		> write.csv(ko2016_labels, file='kowebs/ko2016_labels.csv')
+
+	4) CodeBook 참고
+		: 코드화된 변수명이 무엇을 의미하는지 설명
+		: 데이터 특성에 대한 감을 잡을 수 있음
+		: 분석에 사용할 변수 선택에 활용
+		: 분석방향에 대한 아이디어 획득
+
+	4) 변수 선택 (ko2016)
+
+		---------------- 가구 별 변수 ----------------
+
+		- h11_id 		: 가구패널ID						- 연속변수
+			> summary(ko2016$h1101_1)
+			> table(ko2016$h1101_1)
+			> boxplot(ko2016$h1101_1)$stats
+		- h11_din 		: 가처분소득						- 연속변수
+			> summary(ko2016$h1101_1)
+			> table(ko2016$h1101_1)
+			> boxplot(ko2016$h1101_1)$stats
+		- h11_cin		: 경상소득						- 연속변수
+			> summary(ko2016$h1101_1)
+			> table(ko2016$h1101_1)
+			> boxplot(ko2016$h1101_1)$stats
+		- h11_hc		: 균등화소득에 따른 가구구분		- 범주변수
+			> summary(ko2016$h1101_1)
+			> table(ko2016$h1101_1)
+			> boxplot(ko2016$h1101_1)$stats
+		- h1101_1 		: 가구원수						- 연속변수
+			> summary(ko2016$h1101_1)
+			> table(ko2016$h1101_1)
+			> boxplot(ko2016$h1101_1)$stats
+
+		-------------- 개별 구성원 별 변수 --------------
+
+		- h11_g3		: 성별							- 범주변수
+			> summary(ko2016$h11_g3)
+			> table(ko2016$h11_g3)
+			> boxplot(ko2016$h11_g3)$stats
+		- h11_g4		: 출생년도						- 연속/범주변수
+			> summary(ko2016$h11_g4)
+			> table(ko2016$h11_g4)
+			> boxplot(ko2016$h11_g4)$stats
+		- h11_g10		: 혼인상태						- 범주변수
+			> summary(ko2016$h11_g10)
+			> table(ko2016$h11_g10)
+			> boxplot(ko2016$h11_g10)$stats
+		- h11_g11		: 종교							- 범주변수
+			> summary(ko2016$h11_g11)
+			> table(ko2016$h11_g11)
+			> boxplot(ko2016$h11_g11)$stats
+		- h11_inc2		: 상용-연간총급여액				- 연속변수
+			> summary(ko2016$h11_inc2)
+			> table(ko2016$h11_inc2)
+			> boxplot(ko2016$h11_inc2)$stats
+		- h11_inc3		: 임시일용-연간총급여액			- 연속변수
+			> summary(ko2016$h11_inc3)
+			> table(ko2016$h11_inc3)
+			> boxplot(ko2016$h11_inc3)$stats
+		- h11_eco8		: 업종							- 범주변수
+			> summary(ko2016$h11_eco8)
+			> table(ko2016$h11_eco8)
+			> boxplot(ko2016$h11_eco8)$stats
+		- h11_eco9		: 직종							- 범주변수
+			> summary(ko2016$h11_eco9)
+			> table(ko2016$h11_eco9)
+			> boxplot(ko2016$h11_eco9)$stats
+		- h11_reg7		: 7개 권역별 지역구분				- 범주변수
+			> summary(ko2016$h11_reg7)
+			> table(ko2016$h11_reg7)
+			> boxplot(ko2016$h11_reg7)$stats
+
+
+	2) 쉬운 이름으로 변수명 변경
+		- h11_g3	: 성별					-> gender
+		- h11_g4	: 출생년도				-> birth
+		- h11_g10	: 혼인상태				-> marriage
+		- h11_g11	: 종교					-> religion
+		- h11_inc2	: 상용-연간총급여액		-> reg_income
+		- h11_inc3	: 임시일용-연간총급여액	-> tmp_income
+		- h11_eco8	: 업종					-> biz_field
+		- h11_eco9	: 직종					-> job_field
+		- h11_reg7	: 7개 권역별 지역구분		-> region
+
+		> ko2016 <- rename(
+			            ko2016,
+			            gender = h11_g3,
+			            birth = h11_g4,
+			            marriage = h11_g10,
+			            religion = h11_g11,
+			            reg_income = h11_inc2,
+			            tmp_income = h11_inc3,
+			            biz_field = h11_eco8,
+			            job_field = h11_eco9,
+			            region = h11_reg7
+			)
+		> rownames(ko2016)
+		
+
+	3) 결측치 제거
+       - 결측치 존재/개수/빈도 각 별수별 확인: table( is.na( data ) ) 함수
+       	> table( is.na(ko2016$gender) )
+       	> table( is.na(ko2016$birth) )
+       	> table( is.na(ko2016$marriage) )
+       	> table( is.na(ko2016$religion) )
+       	> table( is.na(ko2016$reg_income) )
+			FALSE  TRUE** 
+			 2725 13264
+       	> table( is.na(ko2016$tmp_income) )
+			FALSE  TRUE**
+			 3472 12517 
+       	> table( is.na(ko2016$biz_field) )
+			FALSE  TRUE**
+			 7285  8704 
+       	> table( is.na(ko2016$job_field) )
+			FALSE  TRUE**
+			 7285  8704 
+       	> table( is.na(ko2016$region) )
+       	> 
+
+	   - 결측치 행(row) 제거: Use filter( !is.na() )
+	   	> ko2016 <- na.omit(ko2016)
+	   	#> ko2016 %>% filter(!is.na(reg_income))
+	   	#> ko2016 %>% filter(!is.na(tmp_income))
+	   	#> ko2016 %>% filter(!is.na(biz_field))
+	   	#> ko2016 %>% filter(!is.na(job_field))
+	   	#> ko2016 %>% filter(!is.na(reg_income) & !is.na(tmp_income) & !is.na(biz_field) & !is.na(job_field))
+	   	> dim(ko2016)
+		[1]   0 842
+		> ko2016 <- kowebs2016
+		> ko2016 <- rename(
+			            ko2016,
+
+			            gender = h11_g3,
+			            birth = h11_g4,
+			            marriage = h11_g10,
+			            religion = h11_g11,
+			            reg_income = h11_inc2,
+			            tmp_income = h11_inc3,
+			            biz_field = h11_eco8,
+			            job_field = h11_eco9,
+			            region = h11_reg7
+			)
+		>
+
+
+	4) 이상치(극단치) 제거
+       - 이상치(극단치) 존재(빈도, 변수) 확인:		확인에 boxplot() 이용
+
+       		> boxplot(ko2016$gender, col = 'aquamarine')
+       		> boxplot(ko2016$birth, col = 'azure2')
+       		> boxplot(ko2016$marriage, col = 'chartreuse') ***
+       		> boxplot(ko2016$religion, col = 'cornsilk')
+       		> boxplot(ko2016$tmp_income, col = 'cyan') ***
+       		> boxplot(ko2016$biz_field, col = 'darkgoldenrod1')
+       		> boxplot(ko2016$job_field, col = 'gainsboro')
+       		> boxplot(ko2016$region, col = 'springgreen')
+       		> boxplot(ko2016$reg_income, col = 'thistle1') ***
+
+			----------------------------------------------------------------------------------
+
+	   - 이상치(극단치) 제거: 이상치 -> 결측치(NA or <NA>)로 변환 후, 분석에서 제외
+
+			----------------------------------------------------------------------------------
+       		> boxplot(ko2016$tmp_income)$stats
+			     [,1]
+			[1,]    0
+			[2,]  396
+			[3,] 1008
+			[4,] 1811
+			[5,] 3910
+			> ko2016$tmp_income <- ifelse(ko2016$tmp_income<0 | ko2016$tmp_income>3910,NA,ko2016$tmp_income)
+			> boxplot(ko2016$tmp_income)
+			> summary(ko2016$tmp_income)
+			   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA''s *
+			    0.0   310.2   600.0   746.5  1080.0  2226.0    2611 
+			> table(is.na(ko2016$tmp_income))
+			> 
+			----------------------------------------------------------------------------------
+
+
+4. 데이터 분석 - 변수 사이의 관계 분석 (상관분석)
+
+	(1) 본격적인 변수 간 관계 분석 (상관분석)
+	(2) 분석결과 요약표를 만든 후, 분석결과 시각화
+
+	----------------------------------------------------------------------------------
+		- h11_g3	: 성별					-> gender
+		- h11_g4	: 출생년도				-> birth
+		- h11_g10	: 혼인상태				-> marriage
+		- h11_g11	: 종교					-> religion
+		- h11_inc2	: 상용-연간총급여액		-> reg_income 	(결극치 + 이상치)
+		- h11_inc3	: 임시일용-연간총급여액	-> tmp_income 	(결극치 + 이상치)
+		- h11_eco8	: 업종					-> biz_field 	(결극치)
+		- h11_eco9	: 직종					-> job_field	(결극치)
+		- h11_reg7	: 7개 권역별 지역구분		-> region
+	----------------------------------------------------------------------------------
+
+	- 사례1: 성별/상용근로자의 연봉차이는?	-> gender + reg_income
+
+		************************************************************************
+		* Step 1
+		************************************************************************
+		> class(ko2016$gender)
+		> boxplot(ko2016$gender, col='gray88')
+		> hist(ko2016$gender, col = 'gray88')
+		> plot(ko2016$gender, col = 'gray88', type='l')
+			"p" for points,
+			"l" for lines,
+			"b" for both,
+			"c" for the lines part alone of "b",
+			"o" for both ‘overplotted’,
+			"h" for ‘histogram’ like (or ‘high-density’) vertical lines,
+			"s" for stair steps,
+			"S" for other steps, see ‘Details’ below,
+			"n" for no plotting.
+		> qplot(ko2016$gender)
+
+		> ko2016$gender <- ifelse(ko2016$gender==1.0, 'M', 'F')
+		> qplot(ko2016$gender)
+
+		************************************************************************
+		* Step 2
+		************************************************************************
+		> class(ko2016$reg_income)
+		> summary(ko2016$reg_income)
+		> boxplot(ko2016$reg_income, col='gray88')
+		> boxplot(ko2016$reg_income, col='gray88')$stats
+		> qplot(ko2016$reg_income) + xlim(0, 8514)
+		> hist(ko2016$reg_income, col = 'gray88')
+		> plot(ko2016$reg_income, col = 'blue', type='l')
+
+		> ko2016 %>% filter(reg_income<0|reg_income>8514) %>% summarise(count=n())
+		> ko2016$reg_income <- ifelse(ko2016$reg_income<0|ko2016$reg_income>8514, NA, ko2016$reg_income)
+		> table(is.na(ko2016$reg_income))
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(gender) %>% summarise(mean_reg_income=mean(reg_income))
+		# A tibble: 2 x 2
+		  gender mean_reg_income
+		    <chr>          <dbl>
+		1      F        2498.010
+		2      M        4098.218
+		> 
+		************************************************************************
+
+
+	- 사례2: 성별/임시근로자의 연봉차이는?	-> gender + tmp_income
+
+		************************************************************************
+		* Step 1
+		************************************************************************
+		> class(ko2016$gender)
+		> boxplot(ko2016$gender, col='gray88')
+		> hist(ko2016$gender, col = 'gray88')
+		> plot(ko2016$gender, col = 'gray88', type='l')
+		> qplot(ko2016$gender)
+
+		************************************************************************
+		* Step 2
+		************************************************************************
+		> class(ko2016$tmp_income)
+		> summary(ko2016$tmp_income)
+		> boxplot(ko2016$tmp_income, col='gray88')
+		> boxplot(ko2016$tmp_income, col='gray88')$stats
+		> qplot(ko2016$tmp_income) + xlim(0, 3840)
+		> hist(ko2016$tmp_income, col = 'gray88')
+		> plot(ko2016$tmp_income, col = 'blue', type='l')
+
+		> ko2016 %>% filter(tmp_income<0|tmp_income>3840) %>% summarise(count=n())
+		> ko2016$tmp_income <- ifelse(ko2016$tmp_income<0|ko2016$tmp_income>3840, NA, ko2016$tmp_income)
+		> table(is.na(ko2016$tmp_income))
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(tmp_income)) %>% group_by(gender) %>% summarise(mean_reg_income=mean(tmp_income))
+		# A tibble: 2 x 2
+		  gender mean_tmp_income
+		    <chr>          <dbl>
+		1      F        2498.010
+		2      M        4098.218
+		> 
+		************************************************************************
+
+
+	- 사례3: 연령별/상용근로자의 연봉차이는?	-> birth + reg_income
+
+		************************************************************************
+		* Step 1 - '출생년도'로부터 '나이' 파생변수 생성
+		************************************************************************
+		> class(ko2016$birth)
+		> boxplot(ko2016$birth, col='gray88')
+		> hist(ko2016$birth, col = 'gray88')
+		> plot(ko2016$birth, col = 'gray88', type='l')
+		> qplot(ko2016$birth)
+
+		> ko2016$age <- 2016 - ko2016$birth + 1 
+		> summary(ko2016$age)
+		   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+		   2.00   29.00   50.00   48.95   70.00  110.00 
+		> boxplot(ko2016$age, col='gray88')
+		> qplot(ko2016$age) + xlim(0, 110)
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(age) %>% summarise(mean_reg_income=mean(reg_income))
+		# A tibble: 61 x 2
+		     age mean_reg_income
+		   <dbl>           <dbl>
+		 1    20        1940.500
+		 2    21        1461.143
+		 3    22        2194.000
+		 4    23        1597.923
+		 5    24        1719.250
+		 6    25        1768.909
+		 7    26        2191.708
+		 8    27        2166.725
+		 9    28        2458.695
+		10    29        2561.393
+		# ... with 51 more rows
+		> plot(res, type='l', col='gray53')
+		> plot(res$age, res$mean_reg_income, type='l', col='gray53')
+		> ggplot(data=res, aes(x=age, y=mean_reg_income)) + geom_line()
+															geom_bin2d()
+															geom_bar()
+															geom_area()
+															geom_abline()
+															geom_boxplot()
+															geom_blank()
+															geom_col()
+															geom_count()
+		************************************************************************
+
+
+	- 사례4: 연령대별/상용근로자의 연봉차이는?	-> birth + reg_income
+
+		************************************************************************
+		* Step 1 - '출생년도'로부터 '나이' 파생변수 생성
+		************************************************************************
+		> class(ko2016$birth)
+		> boxplot(ko2016$birth, col='gray88')
+		> hist(ko2016$birth, col = 'gray88')
+		> plot(ko2016$birth, col = 'gray88', type='l')
+		> qplot(ko2016$birth)
+
+		> ko2016 <- ko2016 %>% mutate(aged = ifelse(age < 30, 'young', ifelse(age < 60, 'mid', 'old')))
+
+		> table(ko2016$aged)
+		  mid   old young 
+		 5702  6156  4131 
+		> qplot(ko2016$aged)
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(aged) %>% summarise(mean_reg_income=mean(reg_income))
+		# A tibble: 3 x 2
+		   aged mean_reg_income
+		  <chr>           <dbl>
+		1   mid        3694.638
+		2   old        2509.289
+		3 young        2192.731
+		> plot(res, type='l', col='gray53')
+		> plot(res$aged, res$mean_reg_income, type='l', col='gray53')
+		> ggplot(data=res, aes(x=age, y=mean_reg_income)) + geom_col() + +scale_x_discrete(limits=c('young','mid','old'))
+		************************************************************************
+
+
+	- 사례5: 연령대별/성별/상용근로자의 연봉차이는?	-> aged + gender + reg_income
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(aged, gender) %>% summarise(mean_reg_income=mean(reg_income))
+		# A tibble: 6 x 3
+		# Groups:   aged [?]
+		   aged gender mean_reg_income
+		  <chr>  <chr>           <dbl>
+		1   mid      F        2637.313
+		2   mid      M        4273.888
+		3   old      F        1611.078
+		4   old      M        2846.118
+		5 young      F        2078.305
+		6 young      M        2429.755
+		> ggplot(data=res, aes(x=aged, y=mean_reg_income, fill=gender)) + geom_col() + scale_x_discrete(limits=c('young','mid','old'))
+		************************************************************************
+
+
+	- 사례6: 연령별/성별/상용근로자의 연봉차이는?	-> age + gender + reg_income
+
+		************************************************************************
+		* Step 3
+		************************************************************************
+		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(age, gender) %>% summarise(mean_reg_income=mean(reg_income))
+		# A tibble: 114 x 3
+		# Groups:   age [?]
+		     age gender mean_reg_income
+		   <dbl>  <chr>           <dbl>
+		 1    20      F        2896.000
+		 2    20      M         985.000
+		 3    21      F        1461.143
+		 4    22      F        2194.000
+		 5    23      F        1675.182
+		 6    23      M        1173.000
+		 7    24      F        1634.647
+		 8    24      M        2198.667
+		 9    25      F        1711.167
+		10    25      M        1922.889
+		# ... with 104 more rows
+		> ggplot(data=res, aes(x=age, y=mean_reg_income, col=gender)) + geom_line()
+
+		
