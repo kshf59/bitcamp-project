@@ -1,0 +1,180 @@
+SQL의 진화
+
+    - 최초의 표준 SQL인 SQL-86
+    - ANSI/ISO SQL2 (SQL-92)
+        - 관계형 DBMS의 전성기 주도
+        - 표준 SQL에 대한 명세 부족 -> 벤더별로 문법이나 용어 차이가 큼
+    - ANSI/ISO SQL3 (SQL-99)
+        - SQL에서 필요한 기능을 정리하고 호환 가능한 여러 기준을 제정
+        - Oracle 8i/9i
+        - 이후 SQL-2003에서 소폭 추가 및 개정되었고, 현재 대부분의 DBMS는 SQL-99와 SQL-2003을 기준으로 삼고 있음
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+ANSI/ISO 표준 SQL의 기능
+
+    - STANDARD JOIN 기능 추가
+        (CROSS, OUTER JOIN 등 새로운 FROM 절 JOIN 기능들)
+    - SCALAR, SUBQUERY, TOP-N QUERY 등의 새로운 SUBQUERY 기능들
+    - ROLLUP, CUBE, GOUPING SETS 등의 새로운 리포팅 기능
+    - WINDOW FUNCTION 같은 새로운 개념의 분석 기능들
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+집합 연산자
+
+    - UNION 연산은 UNION(조합,연합) 기능
+    - INTERSECTION 연산은 INTERSECT(교차하다) 기능
+    - DIFFERENCE 연산은 EXCEPT(Oracle은 MINUS)기능
+    - PRODUCT 연산은 CROSS JOIN 기능
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+집합 연산자
+
+    - UNION 연산은 사전에 정렬 작업이 발생하여 시스템에 부하를 주는데,
+      이후 추가된 UNION 연산은 공통집합을 중복해서 그대로 보여주기 때문에 정렬 작업이 발생하지 않음 -> UNION ALL 사용 권고
+    - DIFFERENCE 연산은 차집합으로써, 대다수 DBMS는 EXCEPT(SQL표준)로 사용하지만 Oracle은 MINUS기능으로 사용
+    - PRODUCT == CARTESIAN PRODUCT
+
+순수 관계 연산자
+
+    - 관계형 데이터베이스를 구현하기 위해 새롭게 만들어진 연산자
+    - SELECT 연산은 WHERE 절로 구현
+    - PROJECT 연산은 SELECT 절로 구현
+    - (NATURAL) JOIN 연산은 다양한 JOIN 기능으로 구현
+    - DIVIDE 연산은 현재 사용되지 않음
+
+FROM 절에서 구할수있는 JOIN의 종류
+
+    - INNER JOIN
+    - NATURAL JOIN
+    - USING 조건절
+    - ON 조건절
+    - CROSS JOIN
+    - OUTER JOIN
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+INNER JOIN
+
+    - JOIN 조건에서 동일한 값이 있는 행만 반환
+        - WHERE 절에서 사용하던 JOIN 조건을 FROM 절에서 정의하겠다는 표시이므로 USING 조건절이나 ON 조건절을 필수적으로 사용해야함
+    - WHERE 절 JOIN 조건
+        - SELECT EMP.DEPTNO, EMPNO, ENMAE, DNAME FROM EMP, DEPT
+          WHERE EMP.DEPTNO = DEPT.DEPTNO;
+    - FROM절 JOIN 조건
+        - SELECT EMP.DEPTNO, EMPNO, ENMAE, DNAME FROM EMP INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO;
+        - SELECT EMP.DEPTNO, EMPNO, ENAME, DNAME FROM EMP JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO;
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+NATURAL JOIN
+
+    특징
+        - 두 테이블 간의 동일 이름을 갖는 칼럼들에 대해 EQUI(=) JOIN을 수행
+            - 칼럼명, 데이터타입, 도메인 등이 동일해야 함
+        - NATURAL JOIN이 명시되면, 추가로 USING 조건절, ON 조건절,
+          WHERE 절에서 JOIN 조건을 정의 할수 없음
+        - SQL SERVER에서는 지원하지 않는 기능
+
+    예제
+        - SELECT DEPTNO, EMPNO, ENAME, DNAME FROM EMP NATURAL JOIN DEPT;
+            - DEPTNO 라는 공통의 이름을 가진 칼럼을 자동 인식하여 JOIN 처리
+            - 칼럼에 ALIAS나 테이블 명과 같은 것을 붙일 수 없음
+    
+    * (와일드카드)
+        - SELECT * FROM EMP NATURAL JOIN DEPT;
+            - 기준 칼럼(DEPTNO)이 가장 먼저 출력
+            - 두개의 칼럼을 하나로 처리
+        - SELECT * FROM EMP INNER JOIN DEPT
+          ON EMP.DEPTNO = DEPT.DEPTNO;
+            - 두 개의 칼럼을 각각 처리/출력
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+USING 조건절
+
+    - 특징
+        - NATURAL JOIN에서는 모든 일치되는 칼럼들에 대해 JOIN이 결성
+        - FROM 절의 USING 조걸절을 이용하면 같은 이름을 가진 칼럼들 중에서 원하는 칼럼에 대해서만 선택적으로 EQUI JOIN을 할 수 있음
+        - 이 기능은 SQL SERVER에서는 지원하지 않음
+    - 예제
+        - CREATE TABLE DEPT_TEMP AS SELECT * FROM DEPT;
+        - SELECT * FROM DEPT JOIN DEPT_TEMP USING (DEPNO);
+            - DEPNO 가 가장 먼저 나옴
+        - SELECT DEPTNO, DEPT.DNAME, DEPT.LOC, DEPT_TEMP.DNAME, DEPT_TEMP.LOC FROM DEPT JOIN DEPT_TEMP USING (DEPTNO);
+            --> DEPT.DEPTNO -> ERROR!!!!
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+ON 조건절
+
+    - WHERE 절과의 혼용
+
+        - SELECT E.ENAME, E.MGR, D.DEPTNO, D.DNAME FROM EMP E JOIN DEPT D
+          ON (E.DEPTNO = D.DEPTNO)
+          WHERE E.MGR = 7698;
+
+        - SELECT E.ENAME, E.MGR, D.DEPTNO, D.DNAME FROM EMP E JOIN DEPT D
+          ON (E.DEPTNO = D.DEPTNO AND E.MGR = 7698);
+
+    - 기타
+        
+        - SELECT TEAM_NAME, TEAM.STADIUM_ID, STADIUM_NAME
+          FROM TEAM JOIN STADIUM
+          ON TEAM.STADIUM_ID = STADIUM.STADIUM_ID
+          ORDER BY STADIUM_ID;
+        
+        - SELECT TEAM_NAME, TEAM_ID, STADIUM_NAME
+          FROM TEAM JOIN STADIUM
+          ON TEAM.TEAM_ID = STADIUM.HOMETEAM_ID
+          ORDER BY TEAM_ID;
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+다중 테이블 JOIN
+
+    - SELECT E.EMPNO, D.DEPTNO, D.DNAME, T.DNAME New_DNAME 
+      FROM EMP E 
+      JOIN DEPT D ON (E.DEPTNO = D.DEPTNO)
+      JOIN DEPT_TEMP T ON (E.DEPTNO = T.DEPTNO);
+
+    - SELECT E.EMPNO, D.DEPTNO, D.DNAME, T.DNAME New_DNAME 
+      FROM EMP E, DEPT D, DEPT_TEMP T
+      WHERE E.DEPTNO = D.DEPTNO AND E.DEPTNO = T.DEPTNO;
+
+    - SELECT P.PLAYER_NAME 선수명, P.POSITION 포지션, T.REGION_NAME 연고지명, T.TEAM_NAME 팀명, S.STADIUM_NAME 구장명
+      FROM PLAYER P JOIN TEAM T 
+      ON P.TEAM_ID = T.TEAM_ID
+      JOIN STADIUM S ON T.STADIUM_ID = S.STADIUM_ID
+      WHERE P.POSITION = 'GK' ORDER BY 선수명;
+
+    - SELECT ST.STADIUM_NAME, SC.STADIUM_ID, SCHE_DATE, HT.TEAM_NAME, AT.TEAM_NAME, HOME_SCORE, AWAY_SCORE
+      FROM SCHEDULE SC 
+      JOIN STADIUM ST ON SC.STADIUM_ID = ST.STADIUM_ID
+      JOIN TEAM HT ON SC.HOMETEAM_ID = HT.TEAM_ID
+      JOIN TEAM AT ON SC.AWAYTEAM_ID = AT.TEAM_ID
+      WHERE HOME_SCORE >= AWAY_SCORE +3;
+
+    - SELECT ST.STADIUM_NAME, SC.STADIUM_ID, SCHE_DATE, HT.TEAM_NAME, AT.TEAM_NAME, HOME_SCORE, AWAY_SCORE
+      FROM SCHEDULE SC, STADIUM ST, TEAM HT, TEAM AT
+      WHERE HOME_SCORE >= AWAY_SCORE +3 AND SC.STADIUM_ID = ST.STADIUM_ID AND SC.HOMETEAM_ID = HT.TEAM_ID AND
+      SC.AWAYTEAM_ID = AT.TEAM_ID;
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+CROSS JOIN
+
+    - 개념
+        - 테이블 간 JOIN 조건이 없는 경우 생길 수 있는 모든 데이터의 조합
+            - 결과는 양쪽 집합의 M*N 건의 데이터 조합이 발생
+        - PRODUCT 연산, CARTESIAN PRODUCT 라고 함
+
+    - 예제
+        - SELECT ENAME, DNAME
+          FROM EMP CROSS JOIN DEPT
+          ORDER BY ENAME;
+        - SELECT ENAME, DNAME
+          FROM EMP CROSS JOIN DEPT
+          WHERE EMP.DEPTNO = DEPT.DEPTNO;
