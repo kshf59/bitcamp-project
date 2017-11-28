@@ -1,0 +1,212 @@
+﻿** 단계구분도(Choropleth Map) 만들기 **
+
+1. 지역별 통계량을 색깔의 차이로 표현한 지도
+
+2. 이 지도를 통해, 데이터(예: 인구, 소득 등)의 지역별 차이를 쉽게 이해 가능
+
+3. 만들기 예제: 미국의 주(state)별, 강력범죄 데이터 이용
+   - R 에 내장된, 'datasets::USArrests' 데이터 사용
+     : 1973년 미국의 주별, 강력 범죄율 정보 저장
+
+   > 
+   > str(USArrests)
+    'data.frame':	50 obs. of  4 variables:
+    $ Murder  : num  13.2 10 8.1 8.8 9 7.9 3.3 5.9 15.4 17.4 ...
+    $ Assault : int  236 263 294 190 276 204 110 238 335 211 ...
+    $ UrbanPop: int  58 48 80 50 91 78 77 72 80 60 ...
+    $ Rape    : num  21.2 44.5 31 19.5 40.6 38.7 11.1 15.8 31.9 25.8 ...
+   > View(USArrests)
+   >
+
+   # 지역명(주 명) 변수가 없고, 행 이름(rownames)이 지역명(주 명) 임
+   # 따라서, 이 행 이름(rownames) -> 'state' 변수(column)로 가지는 New data frame 생성
+   # 즉, 'USArrests' data frame + New 'state' column -> New 'USA.crime' data frame
+   #
+   # 'tibble' 패키지( 'dplyr'패키지 설치시 같이 설치됨 )의 'rownames_to_column()' 함수 사용 
+   # 'USArrests'의 행이름(rownames)을 'state' 변수(=column)로 바꾸어, 
+   #  New 'USA.crime' data frame 생성
+   # 이때, 행 이름('state' 변수)을 소문자로 바꿈 
+   # -> 아래 4의, 'us_map' (지도 데이터) data frame의 'region' 변수(소문자)와 일치시킴
+
+   > 
+   > head(USArrests)
+           Murder Assault UrbanPop Rape
+   Alabama*     13.2     236       58 21.2
+   Alaska       10.0     263       48 44.5
+   Arizona       8.1     294       80 31.0
+   Arkansas      8.8     190       50 19.5
+   California    9.0     276       91 40.6
+   Colorado      7.9     204       78 38.7
+   > 
+   > library(tibble)
+   > 
+   > USA.crime <- rownames_to_column( USArrests, var='state' )
+   > USA.crime$state <- tolower( USA.crime$state )	# base::tolower()
+   > 
+   > str(USA.crime)
+   'data.frame':	50 obs. of  5 variables:
+   $ state   : chr  "alabama" "alaska" "arizona" "arkansas" ... <--- 추가된 주(state) 변수 **
+   $ Murder  : num  13.2 10 8.1 8.8 9 7.9 3.3 5.9 15.4 17.4 ...
+   $ Assault : int  236 263 294 190 276 204 110 238 335 211 ...
+   $ UrbanPop: int  58 48 80 50 91 78 77 72 80 60 ...
+   $ Rape    : num  21.2 44.5 31 19.5 40.6 38.7 11.1 15.8 31.9 25.8 ...
+   > View(USA.crime)
+   > 
+
+
+4. 지역별 위도/경도 정보가 있는 지도 데이터 준비
+   - 'maps::state' 데이터 (미국 주 별, 위/경도 정보 포함) 사용
+   - 'ggplot2::map_data()' 함수 사용 -> 'maps::state' 데이터를 data frame 형태로 불러옴
+
+   > 
+   > install.packages('maps')
+   > 
+   > library(maps)			# state data
+   > library(ggplot2)			# map_data() function
+   > 
+   > USA.map <- map_data('state')	# ggplot2::map_data() function
+   > str(USA.map)
+   'data.frame':	15537 obs. of  6 variables:
+    $ long     : num  -87.5 -87.5 -87.5 -87.5 -87.6 ...
+    $ lat      : num  30.4 30.4 30.4 30.3 30.3 ...
+    $ group    : num  1 1 1 1 1 1 1 1 1 1 ...
+    $ order    : int  1 2 3 4 5 6 7 8 9 10 ...
+    $ region   : chr  "alabama" "alabama" "alabama" "alabama" ...
+    $ subregion: chr  NA NA NA NA ...
+   > View(USA.map)
+   > 
+
+
+5. 필요한 패키지 설치 - 'ggiraphExtra'
+
+   > 
+   > install.packages('ggiraphExtra')
+   > library(ggiraphExtra)
+   > 
+
+
+6. 위의 과정으로
+   지도에 표시될 범죄 데이터 + 지도 데이터 모두 준비됨
+   : 'ggiraphExtra::ggChoropleth()' 함수 사용하여 단계구분도 제작
+
+   > ggChoropleth(
+	data=USA.crime,			# 지도(USA.map)에 표현할 범죄 데이터(USA.crime)
+	aes(
+		fill=Murder,		# 지도(USA.map)에 색깔로 표현할 변수(USA.crim$범죄유형)
+		map_id=state		# 지도(USA.map)에 표시할 지역 기준(변수, USA.crime$state)
+	),
+	map=USA.map			# 지도 데이터(USA.map)
+     )
+   > ggChoropleth(data = USA.crime, aes(fill=Assault, map_id=state), map=USA.map)
+   > ggChoropleth(data = USA.crime, aes(fill=UrbanPop, map_id=state), map=USA.map, interactive=T)
+   > ggChoropleth(data = USA.crime, aes(fill=Rape, map_id=state), map=USA.map, interactive=T)
+   > 
+
+
+7. 
+** 단계구분도(Choropleth Map) 만들기 **
+
+1. 지역별 통계량을 색깔의 차이로 표현한 지도
+
+2. 이 지도를 통해, 데이터(예: 인구, 소득 등)의 지역별 차이를 쉽게 이해 가능
+
+3. 만들기 예제: 미국의 주(state)별, 강력범죄 데이터 이용
+   - R 에 내장된, 'datasets::USArrests' 데이터 사용
+     : 1973년 미국의 주별, 강력 범죄율 정보 저장
+
+   > 
+   > str(USArrests)
+    'data.frame':	50 obs. of  4 variables:
+    $ Murder  : num  13.2 10 8.1 8.8 9 7.9 3.3 5.9 15.4 17.4 ...
+    $ Assault : int  236 263 294 190 276 204 110 238 335 211 ...
+    $ UrbanPop: int  58 48 80 50 91 78 77 72 80 60 ...
+    $ Rape    : num  21.2 44.5 31 19.5 40.6 38.7 11.1 15.8 31.9 25.8 ...
+   > View(USArrests)
+   >
+
+   # 지역명(주 명) 변수가 없고, 행 이름(rownames)이 지역명(주 명) 임
+   # 따라서, 이 행 이름(rownames) -> 'state' 변수(column)로 가지는 New data frame 생성
+   # 즉, 'USArrests' data frame + New 'state' column -> New 'USA.crime' data frame
+   #
+   # 'tibble' 패키지( 'dplyr'패키지 설치시 같이 설치됨 )의 'rownames_to_column()' 함수 사용 
+   # 'USArrests'의 행이름(rownames)을 'state' 변수(=column)로 바꾸어, 
+   #  New 'USA.crime' data frame 생성
+   # 이때, 행 이름('state' 변수)을 소문자로 바꿈 
+   # -> 아래 4의, 'us_map' (지도 데이터) data frame의 'region' 변수(소문자)와 일치시킴
+
+   > 
+   > head(USArrests)
+           Murder Assault UrbanPop Rape
+   Alabama*     13.2     236       58 21.2
+   Alaska       10.0     263       48 44.5
+   Arizona       8.1     294       80 31.0
+   Arkansas      8.8     190       50 19.5
+   California    9.0     276       91 40.6
+   Colorado      7.9     204       78 38.7
+   > 
+   > library(tibble)
+   > 
+   > USA.crime <- rownames_to_column( USArrests, var='state' )
+   > USA.crime$state <- tolower( USA.crim$state )	# base::tolower()
+   > 
+   > str(USA.crime)
+   'data.frame':	50 obs. of  5 variables:
+   $ state   : chr  "alabama" "alaska" "arizona" "arkansas" ... <--- 추가된 주(state) 변수 **
+   $ Murder  : num  13.2 10 8.1 8.8 9 7.9 3.3 5.9 15.4 17.4 ...
+   $ Assault : int  236 263 294 190 276 204 110 238 335 211 ...
+   $ UrbanPop: int  58 48 80 50 91 78 77 72 80 60 ...
+   $ Rape    : num  21.2 44.5 31 19.5 40.6 38.7 11.1 15.8 31.9 25.8 ...
+   > View(USA.crime)
+   > 
+
+
+4. 지역별 위도/경도 정보가 있는 지도 데이터 준비
+   - 'maps::state' 데이터 (미국 주 별, 위/경도 정보 포함) 사용
+   - 'ggplot2::map_data()' 함수 사용 -> 'maps::state' 데이터를 data frame 형태로 불러옴
+
+   > 
+   > install.packages('maps')
+   > 
+   > library(maps)			# state data
+   > library(ggplot2)			# map_data() function
+   > 
+   > USA.map <- map_data('state')	# ggplot2::map_data() function
+   > str(USA.map)
+   'data.frame':	15537 obs. of  6 variables:
+    $ long     : num  -87.5 -87.5 -87.5 -87.5 -87.6 ...
+    $ lat      : num  30.4 30.4 30.4 30.3 30.3 ...
+    $ group    : num  1 1 1 1 1 1 1 1 1 1 ...
+    $ order    : int  1 2 3 4 5 6 7 8 9 10 ...
+    $ region   : chr  "alabama" "alabama" "alabama" "alabama" ...
+    $ subregion: chr  NA NA NA NA ...
+   > View(USA.map)
+   > 
+
+
+5. 필요한 패키지 설치 - 'ggiraphExtra'
+
+   > 
+   > install.packages('ggiraphExtra')
+   > library(ggiraphExtra)
+   > 
+
+
+6. 위의 과정으로
+   지도에 표시될 범죄 데이터 + 지도 데이터 모두 준비됨
+   : 'ggiraphExtra::ggChoropleth()' 함수 사용하여 단계구분도 제작
+
+   > ggChoropleth(
+	data=USA.crime,			# 지도(USA.map)에 표현할 범죄 데이터(USA.crime)
+	aes(
+		fill=Murder,		# 지도(USA.map)에 색깔로 표현할 변수(USA.crim$범죄유형)
+		map_id=state		# 지도(USA.map)에 표시할 지역 기준(변수, USA.crime$state)
+	),
+	map=USA.map			# 지도 데이터(USA.map)
+     )
+   > ggChoropleth(data = USA.crime, aes(fill=Assault, map_id=state), map=USA.map)
+   > ggChoropleth(data = USA.crime, aes(fill=UrbanPop, map_id=state), map=USA.map, interactive=T)
+   > ggChoropleth(data = USA.crime, aes(fill=Rape, map_id=state), map=USA.map, interactive=T)
+   > 
+
+
+7. 
