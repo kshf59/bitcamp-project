@@ -111,7 +111,7 @@
    > 
    > corrplot( mtcars_cor, 			# 상관분석행렬객체
                method='color',			# 색상으로 표시
-               col = col(100),			# 파생 색상 100개 추출
+               #col = col(100),			# 파생 색상 100개 추출
                type = 'lower',			# 왼쪽/아래 행렬만 표시
                order = 'hclust',		# 관련성 높은 상관계수끼리 clustering
                addCoef.col = 'red',		# 상관계수 색상 지정
