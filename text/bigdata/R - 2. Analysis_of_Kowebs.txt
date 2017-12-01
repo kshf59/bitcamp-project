@@ -179,7 +179,7 @@
 	   	#> ko2016 %>% filter(!is.na(reg_income) & !is.na(tmp_income) & !is.na(biz_field) & !is.na(job_field))
 	   	> dim(ko2016)
 		[1]   0 842
-		> ko2016 <- kowebs2016
+		> ko2016 <- kowebs
 		> ko2016 <- rename(
 			            ko2016,
 
@@ -359,7 +359,7 @@
 		************************************************************************
 		* Step 3
 		************************************************************************
-		> ko2016 %>% filter(!is.na(reg_income)) %>% group_by(age) %>% summarise(mean_reg_income=mean(reg_income))
+		> res <- ko2016 %>% filter(!is.na(reg_income)) %>% group_by(age) %>% summarise(mean_reg_income=mean(reg_income))
 		# A tibble: 61 x 2
 		     age mean_reg_income
 		   <dbl>           <dbl>
