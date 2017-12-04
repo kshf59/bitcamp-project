@@ -1,5 +1,6 @@
 const sendAPI = require('./send');
 const openAPI = require('../rest-api/openapi')
+const messageHandler = require('./message-handler')
 
 const handleReceiveMessage = (event) => {
     var senderID = event.sender.id;
@@ -16,7 +17,15 @@ const handleReceiveMessage = (event) => {
     
     var menu = global[senderID].menu; //사용자의 현재 메뉴
 
-    
+    var handler = messageHandler.getHandler(messageText)
+
+    if (handler) {
+        handler(senderID)
+    } else {
+        sendAPI.sendTextMessage(senderID, '유효한 명령이 아닙니다.')
+    }
+
+    /*
     if (messageText == 'help') {
         sendAPI.sendMenuMessage(senderID);
         // 현재 메뉴를 출력한 상태
@@ -39,7 +48,7 @@ const handleReceiveMessage = (event) => {
         }
     } else {
         sendAPI.sendTextMessage(senderID, messageText);
-    }
+    }  */
 };
 
 const handleReceivePostback = (event) => {
