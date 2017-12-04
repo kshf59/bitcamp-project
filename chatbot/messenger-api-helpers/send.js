@@ -14,6 +14,42 @@ const sendTextMessage = (recipientId, messageText) => {
     api.callMessagesAPI(messageData);
 };
 
+const sendAddressSearchMessage = (recipientId) => {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      "attachment":{
+        "type":"template",
+        "payload":{
+          "template_type":"button",
+          "text":"검색 항목",
+          "buttons":[
+            {
+              "type":"postback",
+              "title":"동이름",
+              "payload":"addr_dong"
+            },
+            {
+              "type":"postback",
+              "title":"도로명",
+              "payload":"addr_road"
+            },
+            {
+              "type":"postback",
+              "title":"우편번호",
+              "payload":"addr_post"
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  api.callMessagesAPI(messageData);
+};
+
 const sendImageMessage = (recipientId) => {
     var messageData = {
       recipient: {
@@ -31,79 +67,6 @@ const sendImageMessage = (recipientId) => {
     };
   
     api.callMessagesAPI(messageData);
-};
-
-
-const sendMenuMessage = (recipientId) => {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      "attachment":{
-        "type":"template",
-        "payload":{
-          "template_type":"button",
-          "text":"메뉴",
-          "buttons":[
-            {
-              "type":"postback",
-              "title":"Led",
-              "payload":"menu_led"
-            },
-            {
-              "type":"postback",
-              "title":"주소검색",
-              "payload":"menu_addr"
-            },
-            {
-              "type":"postback",
-              "title":"계산기",
-              "payload":"menu_calc"
-            }
-          ]
-        }
-      }
-    }
-  };
-
-  api.callMessagesAPI(messageData);
-};
-
-const sendAddressSearchMessage = (recipientId) => {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      "attachment":{
-        "type":"template",
-        "payload":{
-          "template_type":"button",
-          "text":"검색항목",
-          "buttons":[
-            {
-              "type":"postback",
-              "title":"동이름",
-              "payload":"addr_dong"
-            },
-            {
-              "type":"postback",
-              "title":"도로명",
-              "payload":"addr_load"
-            },
-            {
-              "type":"postback",
-              "title":"우편번호",
-              "payload":"addr_post"
-            }
-          ]
-        }
-      }
-    }
-  };
-
-  api.callMessagesAPI(messageData);
 };
   
 const sendButton1Message = (recipientId) => {
@@ -168,37 +131,6 @@ const sendButton2Message = (recipientId) => {
     api.callMessagesAPI(messageData);
 };
   
-const sendLedMessage = (recipientId) => {
-    var messageData = {
-      recipient: {
-        id: recipientId
-      },
-      message: {
-        "attachment":{
-          "type":"template",
-          "payload":{
-            "template_type":"button",
-            "text":"LED 스위치",
-            "buttons":[
-              {
-                "type":"postback",
-                "title":"ON",
-                "payload":"led_on"
-              },
-              {
-                "type":"postback",
-                "title":"OFF",
-                "payload":"led_off"
-              }
-            ]
-          }
-        }
-      }
-    };
-  
-    api.callMessagesAPI(messageData);
-};
-  
 const sendGenericMessage = (recipientId) => {
     var messageData = {
         recipient: {
@@ -248,7 +180,5 @@ const sendGenericMessage = (recipientId) => {
 
 module.exports = {
     sendTextMessage,
-    sendLedMessage,
-    sendMenuMessage,
     sendAddressSearchMessage
 };
