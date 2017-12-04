@@ -4,8 +4,6 @@ const messageHandler = {
 
 }
 
-var handler = messageHandler.getHandler(messageText)
-
 const addMessage = (message, handler) => {
     messageHandler[message] = handler;
 }
@@ -15,7 +13,7 @@ const getHandler = (message) => {
 }
 
 // help 메세지를 처리할 함수 등록
-addMessage('help', (senderID) => {
+addMessage('help', (recipientId) => {
 
     const sendMenuMessage = (recipientId) => {
         var messageData = {
