@@ -1,6 +1,10 @@
 const sendAPI = require('./send');
 // 메세지를 받았을때 그메세지를 처리할 함수
-const messageHandler = {}
+const messageHandler = {
+
+}
+
+var handler = messageHandler.getHandler(messageText)
 
 const addMessage = (message, handler) => {
     messageHandler[message] = handler;
