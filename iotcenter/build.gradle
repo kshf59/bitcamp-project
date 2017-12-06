@@ -3,9 +3,11 @@ buildscript {
         jcenter()
         maven { url 'http://repo.spring.io/snapshot' }
         maven { url 'http://repo.spring.io/milestone' }
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-SNAPSHOT'
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7' // support 'provided', 'optional' scope
     }
 }
 
@@ -13,6 +15,13 @@ apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'eclipse' // 이클립스 IDE를 위한 설정 파일을 생성하기 위해 플러그인 추가
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+}
 
 jar { // jar 파일을 만들 때 사용할 정보 
     baseName = 'iotcenter'
@@ -26,6 +35,9 @@ repositories {  // 의존 라이브러리를 다운 받기 위해 사용할 서�
 }
 
 dependencies { // 다운로드 받을 의존 라이브러리 목록
+
+	provided "org.projectlombok:lombok:1.16.6"
+	
     // compile => 빌드(컴파일,JAR 파일 생성 등)할 때 사용할 라이브러리 
     compile("org.springframework.boot:spring-boot-starter-web")
     
