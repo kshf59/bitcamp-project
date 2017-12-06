@@ -1,1 +1,0 @@
-웹 애플리케이션 관련 파일(HTML, CSS, JavaScript, GIF, PNG 등)을 두는 폴더
