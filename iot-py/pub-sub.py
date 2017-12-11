@@ -17,7 +17,7 @@ host = "a3w0dqjvzngs31.iot.ap-northeast-2.amazonaws.com"
 rootCAPath = "root-CA.crt"
 certificatePath = "dev01.cert.pem"
 privateKeyPath = "dev01.private.key"
-useWebsocket = FALSE
+useWebsocket = "FALSE"
 clientId = "kim02"
 topic = "topic_1"
 
