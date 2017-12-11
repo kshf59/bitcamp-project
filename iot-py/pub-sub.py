@@ -13,7 +13,7 @@ def customCallback(client, userdata, message):
     print(message.payload + "\n")
     print("---------\n")
 
-host = a3w0dqjvzngs31.iot.ap-northeast-2.amazonaws.com
+host = "a3w0dqjvzngs31.iot.ap-northeast-2.amazonaws.com"
 rootCAPath = "root-CA.crt"
 certificatePath = "dev01.cert.pem"
 privateKeyPath = "dev01.private.key"
