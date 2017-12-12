@@ -4,6 +4,7 @@ import logging
 import time
 import argparse
 import json
+import led_api as led
 
 def customCallback(client, userdata, message):
     print("메시지 수신: ")
@@ -13,6 +14,11 @@ def customCallback(client, userdata, message):
     #print(message.payload)
     dict = json.loads(message.payload.decode('UTF-8'))     
     print(dict['message'])
+    ledState = dict['led']
+    if ledState == "on":
+        led.onLed(True)
+    else 
+        led.onLed(False)
     print("---------")
 
 host = "a3w0dqjvzngs31.iot.ap-northeast-2.amazonaws.com"
