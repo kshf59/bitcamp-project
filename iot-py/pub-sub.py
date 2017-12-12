@@ -10,7 +10,9 @@ def customCallback(client, userdata, message):
     print("사서함 이름: ")
     print(message.topic)
     print("메시지 사용: ")
-    print(message.payload)
+    #print(message.payload)
+    dict = json.loads(message.payload)
+    print(dict['message'])
     print("---------")
 
 host = "a3w0dqjvzngs31.iot.ap-northeast-2.amazonaws.com"
@@ -41,6 +43,6 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 
 myAWSIoTMQTTClient.connect()
-print("connect\n")
+print("connect")
 
 myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
