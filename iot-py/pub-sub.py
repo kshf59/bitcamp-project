@@ -11,7 +11,7 @@ def customCallback(client, userdata, message):
     print(message.topic)
     print("메시지 사용: ")
     #print(message.payload)
-    dict = json.loads(message.payload.decode('UTF-8'))
+    dict = json.loads(message.payload.decode('UTF-8'))     
     print(dict['message'])
     print("---------")
 
