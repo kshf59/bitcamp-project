@@ -6,6 +6,7 @@ const express = require('express');
 
 // 메시지 이벤트를 처리할 API를 가져온다.
 const receiveAPI = require('../messenger-api-helpers/receive');
+const sendAPI = require('../messenger-api-helpers/send');
 
 // 클라이언트 요청이 들어왔을 때 함수를 호출해주는 객체 
 const router = express.Router();
@@ -33,11 +34,6 @@ router.get('/', (req, res) => {
 // 4) 페이브북 메신저 서버가 사용자에게 메시지를 보낸다.
 // 5) 사용자의 메신저에 응답 내용을 출력된다.
 router.post('/', (req, res) => {
-  // 메신저 서버에서 요청을 받으면 일단 응답한다.
-  // 이유? 
-  // - 20초 이내에 응답을 해야한다.
-  // - 일단 응답한 후 요청 처리 작업을 해도 된다.
-  res.sendStatus(200);
 
   // 응답한 후 요청을 처리하는 작업을 수행한다.
   // => 메신저 서버가 보낸 데이터를 꺼낸다.
@@ -60,33 +56,43 @@ router.post('/', (req, res) => {
 
       // 메시지에 들어있는 각각의 이벤트를 처리한다.
       entry.messaging.forEach(function(event) {
+
         // 접속한 사용자의 상태 정보를 저장할 객체를 준비한다.
         // => 일종의 세션 객체로서 역할을 할 것이다.
         var senderID = event.sender.id;
-        if (!global[senderID]) { // 접속한 사용자를 위한 보관소가 없다면,
+        if (!global[senderID]) {  // 접속한 사용자를 위한 보관소가 없다면,
           global[senderID] = {
-            "user":senderID
-          }; // 빈보관소를 만들어 글로벌 객체에 저장한다.
-
+            'user': senderID
+          }; // 빈 보관소를 만들어 글로벌 객체에 저장한다.
         }
+
         if (event.message) {
-        console.log('event.message==>', event.message)
-        receiveAPI.handleReceiveMessage(event);
+          console.log('event.message===> ', event.message)
+          receiveAPI.handleReceiveMessage(event);
+          //sendAPI.sendTextMessage(senderID,  event.message.text);
 
         } else if (event.postback) {
           console.log('event.postback===> ', event.postback)
           receiveAPI.handleReceivePostback(event);  
-
+          //sendAPI.sendTextMessage(senderID, event.postback.payload);
         } else {
-        //console.log("unknown event===> ", event);
+          console.log('unknown event===> ');//, event);
         }
 
       }); // entry.messaging.forEach()
 
     }); // data.entry.forEach()
 
-  } // if (data.object === 'page') {}
-  
+    // 메신저 서버에서 요청을 받으면 일단 응답한다.
+    // 이유? 
+    // - 20초 이내에 응답을 해야한다.
+    // - 일단 응답한 후 요청 처리 작업을 해도 된다.
+    res.sendStatus(200);    
+
+  } else { // if (data.object === 'page') 
+    // 페이지가 받은 메시지가 아니면 '404 Not Found'를 응답한다.
+    res.sendStatus(404);
+  }
 }); // router.post('/', ...)
     
 module.exports = router;
