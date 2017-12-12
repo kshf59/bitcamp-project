@@ -15,7 +15,7 @@ dev01.on('connect', function() {
   });
 
 function publish(deviceName, topic, data) {
-    device[deviceName].publish(topic, JSON.stringify(dataObj))
+    devices[deviceName].publish(topic, JSON.stringify(dataObj))
 }
 
 module.exports = {
