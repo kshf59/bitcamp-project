@@ -1,4 +1,4 @@
-const api = require('./api')
+const api = require('./api');
 const sendAPI = require('./send');
 const awsIoT = require('../iot-api/aws')
 
@@ -48,20 +48,68 @@ addPostback('/led', (recipientId) => {
 
 addPostback('/led/on', (recipientId) => {
     sendAPI.sendTextMessage(recipientId, 'LED를 켭니다.')
-    awsIoT.publish('dev01','topic_1',{
-      message: 'led_on',
-      led: 'on'
-    })
+    awsIoT.publish('dev01', 'topic_1', {
+      message: 'led on',
+      led: 'on'});
 });
 
 addPostback('/led/off', (recipientId) => {
     sendAPI.sendTextMessage(recipientId, 'LED를 끕니다.')
-    awsIoT.publish('dev01','topic_1',{
-      message: 'led_0ff',
-      led: 'off'
-    })
+    awsIoT.publish('dev01', 'topic_1', {
+      message: 'led off',
+      led: 'off'});
 });
 
+addPostback('/addr', (recipientId) => {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        "attachment":{
+          "type":"template",
+          "payload":{
+            "template_type":"button",
+            "text":"검색 항목",
+            "buttons":[
+              {
+                "type":"postback",
+                "title":"동이름",
+                "payload":"/addr/dong"
+              },
+              {
+                "type":"postback",
+                "title":"도로명",
+                "payload":"/addr/road"
+              },
+              {
+                "type":"postback",
+                "title":"우편번호",
+                "payload":"/addr/post"
+              }
+            ]
+          }
+        }
+      }
+    };
+    api.callMessagesAPI(messageData);
+});
+
+addPostback('/addr/dong', (recipientId) => {
+    sendAPI.sendTextMessage(recipientId, '동이름?');
+});
+
+addPostback('/addr/road', (recipientId) => {
+    sendAPI.sendTextMessage(recipientId, '도로명?');
+});
+
+addPostback('/addr/post', (recipientId) => {
+    sendAPI.sendTextMessage(recipientId, '우편번호?');
+});
+
+addPostback('/calc', (recipientId) => {
+    sendAPI.sendTextMessage(recipientId, '식을 입력하세요.\n예)2 + 3');
+});
 
 module.exports = {
     getHandler
